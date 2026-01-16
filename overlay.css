@@ -1,0 +1,26 @@
+#fate-overlay{
+  position:fixed; inset:0; z-index:2147483647;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,0.45);
+  font-family: system-ui, Arial;
+}
+
+.fate-card{
+  width: 320px;
+  background: white;
+  border-radius: 16px;
+  padding: 18px 20px;
+  text-align: center;
+}
+
+.fate-roll{
+  font-size: 56px;
+  margin: 10px 0;
+}
+
+.fate-btn{
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
