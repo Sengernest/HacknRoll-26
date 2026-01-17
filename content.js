@@ -83,17 +83,24 @@ function showDice(onDone) {
       <div class="fate-roll" id="roll">?</div>
       <button class="fate-btn" id="btn">Roll</button>
       <div style="opacity:.7;margin-top:8px;font-size:12px">1-2 block • 3-6 allow</div>
-    </div>
-  `;
+      <div class="fate-result" id="result" aria-live="polite"></div>
+    </div>`
+  ;
+
   document.documentElement.appendChild(overlay);
 
   overlay.querySelector("#btn").onclick = () => {
     const roll = 1 + Math.floor(Math.random() * 6);
     overlay.querySelector("#roll").textContent = String(roll);
 
+    const ok = roll > 2;
+    const result = overlay.querySelector("#result");
+    result.textContent = ok ? "SUCCESS" : "BLOCKED";
+    result.className = `fate-result ${ok ? "success" : "fail"} show`;
+
     setTimeout(() => {
       overlay.remove();
       onDone(roll);
-    }, 400);
+    }, 500);
   };
 }
