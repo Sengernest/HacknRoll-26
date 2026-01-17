@@ -55,10 +55,18 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function display_memory() {
+  console.log("=== MEMORY ===");
+  for (const entry of memory.history) {
+    console.log(`- ${entry.outcome}`);
+  }
+  console.log("Last Narrations:", memory.lastNarrations);
+}
+
 function mockNarrations(progress, history) {
   return {
-    good: `✨ Progress ${progress}: Fortune nudges you forward.`,
-    very_good: `🌟 Progress ${progress}: Destiny bends completely in your favor.`,
+    good: ` Progress ${progress}: Fortune nudges you forward.`,
+    very_good: ` Progress ${progress}: Destiny bends completely in your favor.`,
   };
 }
 
@@ -75,54 +83,8 @@ function extractJSON(text) {
 }
 
 
-app.post("/chat", async (req, res) => {
-  try {
-    const userMessage = req.body.message;
-
-    if (!userMessage) {
-      return res.status(400).json({ error: "Message is required" });
-    }
-
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: userMessage }],
-        },
-      ],
-    });
-
-    res.json({
-      reply: response.text ?? "No response from Gemini",
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Gemini request failed" });
-  }
-});
-
-app.post("/chat-mock", async (req, res) => {
-  try {
-    const userMessage = req.body.message;
-
-    // Optional: log incoming request
-    console.log("🧪 Mock Gemini request received:", userMessage);
-
-    // ⏳ artificial delay (5 seconds)
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-
-    res.json({
-      reply: "✨ Fate smiles upon you. The path ahead opens without resistance.",
-      mock: true,
-    });
-  } catch (err) {
-    console.error("Mock route error:", err);
-    res.status(500).json({ error: "Mock Gemini failed" });
-  }
-});
-
 app.post("/fate/init", async (req, res) => {
+  console.log("🧠 /fate/init called");
   try {
     const { progress = 0 } = req.body;
 
@@ -160,6 +122,8 @@ app.post("/fate/init", async (req, res) => {
       ok: true,
       narrations: memory.lastNarrations,
     });
+
+    display_memory();
   } catch (err) {
     console.error("INIT error:", err);
     res.status(500).json({ error: "Init failed" });
@@ -168,6 +132,7 @@ app.post("/fate/init", async (req, res) => {
 
 
 app.post("/fate/query", async (req, res) => {
+  console.log("🧠 /fate/query called");
   try {
     const { outcome, progress } = req.body;
 
@@ -192,14 +157,13 @@ app.post("/fate/query", async (req, res) => {
 
     const prompt = `
       ${SYSTEM_PROMPT}
-      Current progress: ${progress} / 100
 
       History:
       ${historyText}
 
       Generate updated narrations for:
-      - GOOD outcome
-      - VERY_GOOD outcome
+      - GOOD outcome, ${progress+10} / 100 progress
+      - VERY_GOOD outcome, ${progress+20} / 100 progress
       `;
 
     const response = await ai.models.generateContent({
@@ -220,6 +184,8 @@ app.post("/fate/query", async (req, res) => {
       good: json.good,
       very_good: json.very_good,
     };
+
+    display_memory();
 
     res.json({
       ok: true,
@@ -246,7 +212,7 @@ app.post("/mockfate/init", async (req, res) => {
     memory.lastNarrations = narrations;
 
     console.log("🧪 MOCK INIT");
-    console.log("Memory:", memory);
+    display_memory
 
     res.json({
       ok: true,
@@ -254,6 +220,7 @@ app.post("/mockfate/init", async (req, res) => {
       narrations,
       memory,
     });
+    
   } catch (err) {
     console.error("Mock init error:", err);
     res.status(500).json({ error: "Mock init failed" });
@@ -288,7 +255,7 @@ app.post("/mockfate/query", async (req, res) => {
     memory.lastNarrations = narrations;
 
     console.log("🧪 MOCK QUERY");
-    console.log("Memory:", memory);
+    display_memory();
 
     res.json({
       ok: true,

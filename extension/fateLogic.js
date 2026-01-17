@@ -12,9 +12,9 @@ window.Fate.progress._state = {
 
 window.Fate.DIE_SIZE = 20;
 
-const FATE_VERY_BAD = 1; // 1-4
-const FATE_BAD = 1; // 5-8
-const FATE_GOOD = 10; // 9-20
+const FATE_VERY_BAD = 3; // 1-4
+const FATE_BAD = 10; // 5-8
+const FATE_GOOD = 17; // 9-20
 const FATE_VERY_GOOD = 20; // N/A
 
 window.Fate.Category = Object.freeze({
@@ -36,11 +36,6 @@ window.Fate.FATE_UI = {
   [window.Fate.Category.GOOD]: { text: "SUCCESS", className: "good" },
   [window.Fate.Category.BAD]: { text: "BAD LUCK", className: "bad" },
   [window.Fate.Category.VERY_BAD]: { text: "DISASTER", className: "very-bad" },
-};
-
-window.Fate.progress._state = {
-  value: 0,
-  max: 100,
 };
 
 /*************************************************

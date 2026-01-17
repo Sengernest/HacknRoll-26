@@ -6,7 +6,7 @@ async function initFate(progress) {
   if (inFlight) return;
   inFlight = true;
 
-  const res = await fetch("http://localhost:3000/fate/init", {
+  const res = await fetch("http://localhost:3000/mockfate/init", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ progress }),
@@ -24,7 +24,7 @@ async function refillNarrations(outcome, progress) {
   if (inFlight) return;
   inFlight = true;
 
-  const res = await fetch("http://localhost:3000/fate/query", {
+  const res = await fetch("http://localhost:3000/mockfate/query", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ outcome, progress }),

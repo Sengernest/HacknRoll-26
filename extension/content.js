@@ -49,6 +49,11 @@ document.addEventListener(
         ui.remove();
         perform(pending);
         cleanup();
+
+        if (window.Fate.progress.get() >= window.Fate.progress._state.max) {
+          chrome.runtime.sendMessage({ type: "FATE_INIT", progress: 0 });
+          window.Fate.progress.set(0);
+        }
         chrome.runtime.sendMessage({
           type: "FATE_CONSUMED",
           outcome: fate,
@@ -68,6 +73,12 @@ document.addEventListener(
           : window.Fate.punishments.pickBad();
 
       ui.setResult(fate, punishment?.message ?? "Bad luck.");
+      
+      await sendMessageAsync({
+        type: "FATE_CONSUMED",
+        outcome: punishment?.message ?? fate,
+        progress: window.Fate.progress.get(),
+      });
 
       await window.Fate.sleep(1500);
       ui.remove();
@@ -141,6 +152,8 @@ function showDice(onDone) {
     } else {
       window.Fate.progress.add(0);
     }
+
+    
 
     await window.Fate.sleep(300);
     await onDone(fate, ui);

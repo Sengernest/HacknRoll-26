@@ -7,7 +7,7 @@ window.Fate.punishments = window.Fate.punishments || {};
 window.Fate.punishments.veryBadList = [
   //loading wheel
   {
-    message: "Bad luck. Did you lose connection?",
+    message: "You step on a hidden glyph! A temporal snare activates, slowing your movements as the magic finishes casting.",
     run: async () => {
       let soundAudio = null;
       try {
@@ -66,7 +66,7 @@ window.Fate.punishments.veryBadList = [
   //screen glitch
   {
     message:
-      "💀 Bad luck! Your website is gg to crash!",
+      "The pocket realm destabilizes. With no warning, the plane tears itself apart.",
 
     // flip screen
     run: async () => {
@@ -122,7 +122,7 @@ window.Fate.punishments.veryBadList = [
   
   //page not found
   {
-    message: "💀 Bad Luck! Are you sure you found the correct page?",
+    message: "The ritual circle fails to respond. This area has been cut off from the rest of the world, and your magic finds no anchor.",
     run: async () => {
       let musicAudio = null;
       try {
@@ -164,7 +164,7 @@ window.Fate.punishments.veryBadList = [
 window.Fate.punishments.badList = [
   //dodge clicker
   {
-    message: "Bad luck! Try to click.",
+    message: "The room reacts to every move you make. Platforms slide and walls shift, forcing you to move carefully or be thrown off balance.",
     run: async () => {
       let audio = null;
       try {
@@ -235,7 +235,7 @@ window.Fate.punishments.badList = [
   
   //rickroll
   {
-    message: "Bad luck. A mysterious video appears.",
+    message: "A mischievous illusionist mocks you! A looping tune echoes through the area, distracting and breaking your focus.",
     run: async () => {
       const overlay = document.createElement("div");
       overlay.style.position = "fixed";
@@ -268,7 +268,7 @@ window.Fate.punishments.badList = [
   
   //gibberish text
   {
-    message: "Bad luck. Can u read?",
+    message: "A curse of scrambled runes takes hold! Written words twist and lose meaning as you try to read them.",
     run: async () => {
       const original = new Map();
 
@@ -337,7 +337,7 @@ window.Fate.punishments.badList = [
   
   //blur screen with ducks
   {
-    message: "Bad luck. Wait, what's that sound?",
+    message: "You anger a duck-herding fey spirit! A swarm of illusory ducks floods the area, blocking your vision and quacking loudly.",
     run: async () => {
       //for blur screen quackers
       function playLoopingDuckSound() {
@@ -431,7 +431,7 @@ window.Fate.punishments.badList = [
   
   //disable mouseclicks
   {
-    message: "Bad luck, your mouse clicks are disabled!",
+    message: "Bandits leap from hiding and bind your hands! You are restrained and cannot act freely. { Your mouse clicks are disabled!}",
     run: async () => {
       //for disable clicks punishment
       function playErrorSound() {
