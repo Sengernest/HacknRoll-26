@@ -48,7 +48,7 @@ window.Fate.punishments.badList = [
     await window.Fate.sleep(10000);
     document.body.style.filter = "";
   },
-  
+
   //invert colors
   async function punishInvert() {
     alert(
@@ -63,12 +63,92 @@ window.Fate.punishments.badList = [
   async function punishRickroll() {
     window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
   },
-  
+
   /*close tab (DOES NOT WORK)
   async function punishCloseTab() {
     alert("💀 Fate has decided.");
     window.close(); // may or may not work
   },*/
+
+  async function punishGibberishText() {
+    alert("💀 Bad luck! All text will become gibberish for 10 seconds...");
+
+    const original = new Map();
+
+    function isEligibleTextNode(node) {
+      if (!node.nodeValue) return false;
+      if (!node.nodeValue.trim()) return false;
+
+      const el = node.parentElement;
+      if (!el) return false;
+
+      // avoid places where messing with text is dangerous/annoying
+      const tag = el.tagName?.toLowerCase();
+      if (
+        tag === "script" ||
+        tag === "style" ||
+        tag === "code" ||
+        tag === "pre"
+      ) {
+        return false;
+      }
+
+      // don't scramble your own UI
+      if (el.closest("#fate-overlay")) return false;
+
+      return true;
+    }
+
+    function toGibberish(text) {
+      // preserve whitespace and punctuation, scramble letters/numbers
+      const alphabet = "abcdefghijklmnopqrstuvwxyz";
+      const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const digits = "0123456789";
+
+      let out = "";
+      for (const ch of text) {
+        if (ch >= "a" && ch <= "z") {
+          out += alphabet[Math.floor(Math.random() * alphabet.length)];
+        } else if (ch >= "A" && ch <= "Z") {
+          out += ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
+        } else if (ch >= "0" && ch <= "9") {
+          out += digits[Math.floor(Math.random() * digits.length)];
+        } else {
+          out += ch; // punctuation/space unchanged
+        }
+      }
+      return out;
+    }
+
+    const walker = document.createTreeWalker(
+      document.body,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode(node) {
+          return isEligibleTextNode(node)
+            ? NodeFilter.FILTER_ACCEPT
+            : NodeFilter.FILTER_REJECT;
+        },
+      }
+    );
+
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+
+    // scramble
+    for (const node of nodes) {
+      original.set(node, node.nodeValue);
+      node.nodeValue = toGibberish(node.nodeValue);
+    }
+
+    await window.Fate.sleep(10000);
+
+    // restore
+    for (const [node, text] of original.entries()) {
+      // ensure node is still in DOM
+      if (node && node.parentNode) node.nodeValue = text;
+    }
+  },
 ];
 
 function shuffle(arr) {
@@ -103,8 +183,6 @@ window.Fate.punishments.runVeryBad = async function runVeryBad() {
   const p = window.Fate.punishments._bag.pop();
   await p();
 };
-
-
 
 /*window.Fate.punishments.runRandom = async function runRandomPunishment() {
   const arr = window.Fate.punishments.list;
