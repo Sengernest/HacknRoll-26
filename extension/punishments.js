@@ -271,25 +271,25 @@ window.Fate.punishments._veryBadBag = [];
 
 window.Fate.punishments.runBad = async function runBad(ui) {
   // Refill bag if empty
-  if (window.Fate.punishments._bag.length === 0) {
-    window.Fate.punishments._bag = [...window.Fate.punishments.badList];
-    shuffle(window.Fate.punishments._bag);
+  if (window.Fate.punishments._badBag.length === 0) {
+    window.Fate.punishments._badBag = [...window.Fate.punishments.badList];
+    shuffle(window.Fate.punishments._badBag);
   }
 
   // Draw one punishment
-  const p = window.Fate.punishments._bag.pop();
+  const p = window.Fate.punishments._badBag.pop();
   await p(ui);
 };
 
 window.Fate.punishments.runVeryBad = async function runVeryBad(ui) {
   // Refill bag if empty
-  if (window.Fate.punishments._bag.length === 0) {
-    window.Fate.punishments._bag = [...window.Fate.punishments.veryBadList];
-    shuffle(window.Fate.punishments._bag);
+  if (window.Fate.punishments._veryBadBag.length === 0) {
+    window.Fate.punishments._veryBadBag = [...window.Fate.punishments.veryBadList];
+    shuffle(window.Fate.punishments._veryBadBag);
   }
 
   // Draw one punishment
-  const p = window.Fate.punishments._bag.pop();
+  const p = window.Fate.punishments._veryBadBag.pop();
   await p(ui);
 };
 
