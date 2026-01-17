@@ -465,8 +465,6 @@ window.Fate.punishments.badList = [
         } catch (e) {}
       }
 
-      alert("💀 Bad luck! Your mouse clicks are disabled...");
-
       const blocker = document.createElement("div");
       blocker.style.position = "fixed";
       blocker.style.inset = "0";
