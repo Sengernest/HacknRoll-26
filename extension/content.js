@@ -9,7 +9,7 @@ document.addEventListener(
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // don't break new tab etc
 
     const el = e.target.closest(
-      "a,button,[role='button'],input[type='submit']"
+      "a,button,[role='button'],input[type='submit']",
     );
     if (!el) return;
 
@@ -24,29 +24,34 @@ document.addEventListener(
     pending = describe(el);
     busy = true;
 
-    showDice(async (fate) => {
+    showDice(async (fate, ui) => {
       if (fate === window.Fate.Category.GOOD) {
+        ui.showMessage("Success!");
+        await window.Fate.sleep(500);
+        ui.remove();
         perform(pending);
-      } else {
-        await applyPunishment(fate);
+        cleanup();
+        return;
       }
+
+      const p =
+        fate === window.Fate.Category.VERY_BAD
+          ? window.Fate.punishments.pickVeryBad()
+          : window.Fate.punishments.pickBad();
+      
+      ui.showMessage(p?.message ?? "Bad luck.");
+      await window.Fate.sleep(1500);
+      ui.remove();
+
+      if (p && typeof p.run === "function") {
+        await p.run();
+      }
+
       cleanup();
     });
   },
-  true
+  true,
 ); // capture phase
-
-async function applyPunishment(fate) {
-  if (fate === window.Fate.Category.VERY_BAD) {
-    await window.Fate.punishments.runVeryBad();
-    return;
-  }
-
-  if (fate === window.Fate.Category.BAD) {
-    await window.Fate.punishments.runBad();
-    return;
-  }
-}
 
 // UI
 function showDice(onDone) {
@@ -87,10 +92,11 @@ function showDice(onDone) {
 
     result.textContent = `${text} (Rolled ${roll})`;
     result.className = `fate-result show ${className}`;
+    ui.setResult(fate);
 
-    await window.Fate.sleep(800);
+    await window.Fate.sleep(50);
     overlay.remove();
-    await onDone(fate);
+    await onDone(fate, ui);
   })();
 }
 
