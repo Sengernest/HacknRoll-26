@@ -24,9 +24,10 @@ document.addEventListener(
     pending = describe(el);
     busy = true;
 
-    showDice((roll) => {
+    showDice(async (roll) => {
       // MVP rule: 1-2 block, 3-6 allow
       if (roll <= 2) {
+        await window.Fate.punishments.runRandom();
         // blocked
         cleanup();
       } else {
@@ -89,7 +90,7 @@ function showDice(onDone) {
 
   document.documentElement.appendChild(overlay);
 
-  overlay.querySelector("#btn").onclick = () => {
+  overlay.querySelector("#btn").onclick = async () => {
     const roll = 1 + Math.floor(Math.random() * 6);
     overlay.querySelector("#roll").textContent = String(roll);
 
@@ -98,9 +99,8 @@ function showDice(onDone) {
     result.textContent = ok ? "SUCCESS" : "BLOCKED";
     result.className = `fate-result ${ok ? "success" : "fail"} show`;
 
-    setTimeout(() => {
-      overlay.remove();
-      onDone(roll);
-    }, 500);
+    await window.Fate.sleep(400);
+    overlay.remove();
+    await onDone(roll);
   };
 }
