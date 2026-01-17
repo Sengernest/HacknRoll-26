@@ -69,7 +69,6 @@ function showDice(onDone) {
 
     overlay.querySelector("#roll").textContent = String(roll);
 
-    console.log("roll:", roll)
     const fate = window.Fate.evaluateFate(roll);
 
     const { text, className } = window.Fate.FATE_UI[fate];
@@ -78,7 +77,7 @@ function showDice(onDone) {
 
     await window.Fate.sleep(400);
     overlay.remove();
-    await onDone(roll);
+    await onDone(fate);
   };
 }
 
