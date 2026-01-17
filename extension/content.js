@@ -24,11 +24,15 @@ document.addEventListener(
     pending = describe(el);
     busy = true;
 
-    showDice(async (fate) => {
+    showDice(async (fate, ui) => {
       if (fate === window.Fate.Category.GOOD) {
+        ui.showMessage("Success!");
+        await window.Fate.sleep(400);
+        ui.remove();
         perform(pending);
       } else {
-        await applyPunishment(fate);
+        await applyPunishment(fate, ui);
+        ui.remove();
       }
       cleanup();
     });
@@ -36,14 +40,14 @@ document.addEventListener(
   true
 ); // capture phase
 
-async function applyPunishment(fate) {
+async function applyPunishment(fate, ui) {
   if (fate === window.Fate.Category.VERY_BAD) {
-    await window.Fate.punishments.runVeryBad();
+    await window.Fate.punishments.runVeryBad(ui);
     return;
   }
 
   if (fate === window.Fate.Category.BAD) {
-    await window.Fate.punishments.runBad();
+    await window.Fate.punishments.runBad(ui);
     return;
   }
 }
@@ -56,27 +60,45 @@ function showDice(onDone) {
     <div class="fate-card">
       <div>🎲 Roll to Click</div>
       <div class="fate-roll" id="roll">?</div>
-      <button class="fate-btn" id="btn">Roll</button>
+
       <div class="fate-result" id="result" aria-live="polite"></div>
+      <div class="fate-msg" id="msg" aria-live="polite"></div>
+
+      <button class="fate-btn" id="btn">Roll</button>
     </div>`;
 
   document.documentElement.appendChild(overlay);
 
-  overlay.querySelector("#btn").onclick = async () => {
-    const roll = 1 + Math.floor(Math.random() * window.Fate.DIE_SIZE);
+  const rollElem = overlay.querySelector("#roll");
+  const resultElem = overlay.querySelector("#result");
+  const messageElem = overlay.querySelector("#msg");
+  const button = overlay.querySelector("#btn");
 
-    overlay.querySelector("#roll").textContent = String(roll);
+  const ui = {
+    showMessage(text) {
+      messageElem.textContent = text ?? "";
+    },
+    setResult(fate) {
+      const u = window.Fate.FATE_UI[fate] ?? { text: "???", className: "" };
+      resultElem.textContent = u.text;
+      resultElem.className = `fate-result show ${u.className}`;
+    },
+    remove() {
+      overlay.remove();
+    },
+  };
+
+  button.onclick = async () => {
+    const roll = 1 + Math.floor(Math.random() * window.Fate.DIE_SIZE);
+    rollElem.textContent = String(roll);
 
     const fate = window.Fate.evaluateFate(roll);
+    ui.setResult(fate);
 
-    const result = overlay.querySelector("#result");
-    const { text, className } = window.Fate.FATE_UI[fate];
-    result.textContent = text;
-    result.className = `fate-result show ${className}`;
+    // let the UI update before heavy stuff
+    await window.Fate.sleep(50);
 
-    await window.Fate.sleep(400);
-    overlay.remove();
-    await onDone(fate);
+    await onDone(fate, ui);
   };
 }
 

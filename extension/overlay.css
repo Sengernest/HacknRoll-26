@@ -76,3 +76,10 @@
   color: #b42318;
   border: 1px solid #ffc7c7;
 }
+
+.fate-msg{
+  margin-top: 10px;
+  font-size: 13px;
+  opacity: 0.85;
+  min-height: 18px;
+}

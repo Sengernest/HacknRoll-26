@@ -34,7 +34,7 @@ window.Fate.punishments._refillAIPool();
 
 window.Fate.punishments.veryBadList = [
   //fake loading
-  async function punishFakeLoading() {
+  async function punishFakeLoading(ui) {
     const overlay = document.createElement("div");
     overlay.style.position = "fixed";
     overlay.style.inset = "0";
@@ -51,16 +51,16 @@ window.Fate.punishments.veryBadList = [
   },
 
   //flip screen
-  async function punishFlip() {
-    alert("💀 Bad luck! Your screen will be flipped for 10 seconds...");
+  async function punishFlip(ui) {
+    ui.showMessage("💀 Bad luck! Your screen will be flipped for 10 seconds...");
     document.body.style.transform = "rotate(180deg)";
     await window.Fate.sleep(10000);
     document.body.style.transform = "";
   },
 
   //freeze clicks briefly
-  async function punishFreeze() {
-    alert("💀 Bad luck! Your mouse clicks will be disabled for 10 seconds...");
+  async function punishFreeze(ui) {
+    ui.showMessage("💀 Bad luck! Your mouse clicks will be disabled for 10 seconds...");
     const blocker = document.createElement("div");
     blocker.style.position = "fixed";
     blocker.style.inset = "0";
@@ -71,7 +71,7 @@ window.Fate.punishments.veryBadList = [
   },
 
   // ✅ AI cursed text BUT instant: overlay now, AI text later
-  async function punishCursedTextAI() {
+  async function punishCursedTextAI(ui) {
     // ensure pool refills in background if low
     if (window.Fate.punishments._aiPool.length < 2) {
       window.Fate.punishments._refillAIPool();
@@ -135,16 +135,16 @@ window.Fate.punishments.veryBadList = [
 
 window.Fate.punishments.badList = [
   //blur screen
-  async function punishBlur() {
-    alert("💀 Bad luck! Your screen will be blurred for 10 seconds...");
+  async function punishBlur(ui) {
+    ui.showMessage("💀 Bad luck! Your screen will be blurred for 10 seconds...");
     document.body.style.filter = "blur(5px)";
     await window.Fate.sleep(10000);
     document.body.style.filter = "";
   },
 
   //invert colors
-  async function punishInvert() {
-    alert(
+  async function punishInvert(ui) {
+    ui.showMessage(
       "💀 Bad luck! The colors of your screen will be inverted for 10 seconds..."
     );
     document.body.style.filter = "invert(1) hue-rotate(180deg)";
@@ -153,18 +153,18 @@ window.Fate.punishments.badList = [
   },
 
   //rick roll
-  async function punishRickroll() {
+  async function punishRickroll(ui) {
     window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
   },
 
   /*close tab (DOES NOT WORK)
-  async function punishCloseTab() {
-    alert("💀 Fate has decided.");
+  async function punishCloseTab(ui) {
+    ui.showMessage("💀 Fate has decided.");
     window.close(); // may or may not work
   },*/
 
-  async function punishGibberishText() {
-    alert("💀 Bad luck! All text will become gibberish for 10 seconds...");
+  async function punishGibberishText(ui) {
+    ui.showMessage("💀 Bad luck! All text will become gibberish for 10 seconds...");
 
     const original = new Map();
 
@@ -253,7 +253,7 @@ function shuffle(arr) {
 
 window.Fate.punishments._bag = [];
 
-window.Fate.punishments.runBad = async function runBad() {
+window.Fate.punishments.runBad = async function runBad(ui) {
   // Refill bag if empty
   if (window.Fate.punishments._bag.length === 0) {
     window.Fate.punishments._bag = [...window.Fate.punishments.badList];
@@ -262,10 +262,10 @@ window.Fate.punishments.runBad = async function runBad() {
 
   // Draw one punishment
   const p = window.Fate.punishments._bag.pop();
-  await p();
+  await p(ui);
 };
 
-window.Fate.punishments.runVeryBad = async function runVeryBad() {
+window.Fate.punishments.runVeryBad = async function runVeryBad(ui) {
   // Refill bag if empty
   if (window.Fate.punishments._bag.length === 0) {
     window.Fate.punishments._bag = [...window.Fate.punishments.veryBadList];
@@ -274,7 +274,7 @@ window.Fate.punishments.runVeryBad = async function runVeryBad() {
 
   // Draw one punishment
   const p = window.Fate.punishments._bag.pop();
-  await p();
+  await p(ui);
 };
 
 //use this to test ai
