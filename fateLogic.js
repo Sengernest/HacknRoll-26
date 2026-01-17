@@ -2,9 +2,9 @@ window.Fate = window.Fate || {};
 
 window.Fate.DIE_SIZE = 12;
 
-const FATE_VERY_BAD = 4; // 1-4
-const FATE_BAD = 8; // 5-8
-const FATE_GOOD = 12; // 9-12
+const FATE_VERY_BAD = 2; // 1-2
+const FATE_BAD = 6; // 3-6
+const FATE_GOOD = 12; // 7-12
 
 window.Fate.Category = Object.freeze({
   VERY_BAD: "VERY_BAD",

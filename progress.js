@@ -43,7 +43,7 @@ document.dispatchEvent(new Event("fate:progressReady"));
  *************************************************/
 
 window.Fate.progress.add = function addProgress(amount) {
-  set(window.Fate.progress._state.value + amount);
+    set(window.Fate.progress._state.value + amount);
 };
 
 window.Fate.progress.set = function setProgress(value) {

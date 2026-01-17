@@ -2,10 +2,8 @@
  * STATE
  *************************************************/
 
-const FateState = {
-  busy: false,
-  pendingAction: null,
-};
+let busy = false;
+let pending = null;
 
 /*************************************************
  * INIT
@@ -23,109 +21,52 @@ function attachClickInterceptor() {
   document.addEventListener(
     "click",
     (e) => {
-      if (!shouldIntercept(e)) return;
-document.addEventListener(
-  "click",
-  (e) => {
-    if (busy) return;
-    if (e.button !== 0) return; // left click only
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // don't break new tab etc
+      if (busy) return;
+      if (e.button !== 0) return; // left click only
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // don't break new tab etc
 
-    const el = e.target.closest(
-      "a,button,[role='button'],input[type='submit']"
-    );
-    if (!el) return;
+      const el = e.target.closest(
+        "a,button,[role='button'],input[type='submit']"
+      );
+      if (!el) return;
 
-    // ignore our own overlay
-    if (el.closest("#fate-overlay")) return;
+      // ignore our own overlay
+      if (el.closest("#fate-overlay")) return;
 
-    // STOP the click
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
+      // STOP the click
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
 
-    pending = describe(el);
-    busy = true;
+      pending = describe(el);
+      busy = true;
 
-      showDiceOverlay(async (roll) => {
-        await resolveRoll(roll);
+      showDice(async (fate) => {
+        if (fate === window.Fate.Category.GOOD) {
+          await window.Fate.progress.add(10);
+          perform(pending);
+          
+        } else {
+          await applyPunishment(fate);
+        }
         cleanup();
       });
     },
     true
-  );
+  ); // capture phase
 }
 
-function shouldIntercept(e) {
-  if (FateState.busy) return false;
-  if (e.button !== 0) return false;
-  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return false;
+async function applyPunishment(fate) {
+  await window.Fate.punishments.runRandom()
+  // if (fate === window.Fate.Category.VERY_BAD) {
+  //   await window.Fate.punishments.runVeryBad();
+  //   return;
+  // }
 
-  const el = e.target.closest(
-    "a,button,[role='button'],input[type='submit']"
-  );
-  if (!el) return false;
-  if (el.closest("#fate-overlay")) return false;
-
-  return true;
-}
-
-/*************************************************
- * DICE RESOLUTION
- *************************************************/
-
-async function resolveRoll(roll) {
-  if (roll <= 2) {
-    await window.Fate?.punishments?.runRandom?.();
-    FateProgress.add(-5);
-    return;
-  }
-
-  FateProgress.add(10);
-  performAction(FateState.pendingAction);
-}
-
-/*************************************************
- * ACTION HANDLING
- *************************************************/
-
-function describeAction(target) {
-  const el = target.closest(
-    "a,button,[role='button'],input[type='submit']"
-  );
-  if (!el) return null;
-
-  if (el.tagName === "A") {
-    return { type: "NAV", el, href: el.getAttribute("href") };
-  }
-
-  if (el.matches("input[type='submit']") && el.form) {
-    return { type: "FORM", form: el.form };
-  }
-
-  return { type: "CLICK", el };
-}
-
-function performAction(action) {
-  if (!action) return;
-
-  switch (action.type) {
-    case "NAV":
-      if (action.href && !action.href.startsWith("javascript:")) {
-        window.location.href = action.href;
-      } else {
-        action.el.click();
-      }
-      break;
-
-    case "FORM":
-      action.form.submit();
-      break;
-
-    case "CLICK":
-      action.el.click();
-      break;
-  }
+  // if (fate === window.Fate.Category.BAD) {
+  //   await window.Fate.punishments.runBad();
+  //   return;
+  // }
 }
 
 // UI
