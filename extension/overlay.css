@@ -54,6 +54,38 @@
 }
 
 /* ================================
+   ROLL BUTTON
+   ================================ */
+.fate-card{
+  width: 320px;
+  /* background: white; */
+  border-radius: 16px;
+  padding: 18px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fate-btn{
+  margin-top: 10px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.fate-btn:disabled{
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ================================
    RESULT MESSAGE (TOP OF SCREEN)
    ================================ */
 

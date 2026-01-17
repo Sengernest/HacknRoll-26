@@ -67,6 +67,7 @@ function showDice(onDone) {
   overlay.innerHTML = `
     <div class="fate-card">
       <img id="dice-img" src="${initialSrc}" style="cursor:pointer" />
+      <button class="fate-btn" id="roll-btn">Roll</button>
       <div class="fate-result" id="result" aria-live="polite"></div>
     </div>
   `;
@@ -74,6 +75,7 @@ function showDice(onDone) {
   document.documentElement.appendChild(overlay);
 
   const diceImg = overlay.querySelector("#dice-img");
+  const rollBtn = overlay.querySelector("#roll-btn");
   const resultElem = overlay.querySelector("#result");
 
   const ui = {
@@ -87,52 +89,45 @@ function showDice(onDone) {
     },
   };
 
-  // -------------------------------
-  // WAIT FOR USER TO CLICK DICE
-  // -------------------------------
-  awaitUserClick(diceImg, async () => {
-    // Small tactile delay
+  const roll = async () => {
+    rollBtn.disabled = true;
+    rollBtn.style.display = "none";
+    diceImg.style.pointerEvents = "none";
+
     await window.Fate.sleep(80);
 
-    // ROLL phase
-    const roll =
-      1 + Math.floor(Math.random() * window.Fate.DIE_SIZE);
+    const rollVal = 1 + Math.floor(Math.random() * window.Fate.DIE_SIZE);
 
     await playDiceOutcomeAnimation({
       imgEl: diceImg,
-      outcome: roll,
+      outcome: rollVal,
       frameCount: 72,
       fps: 60,
     });
 
-    // RESULT
-    const fate = window.Fate.evaluateFate(roll);
+    const fate = window.Fate.evaluateFate(rollVal);
 
     switch (fate) {
-      case window.Fate.Category.GOOD:
-        window.Fate.progress.add(10);
-        break;
-      case window.Fate.Category.BAD:
-        window.Fate.progress.add(3);
-        break;
-      case window.Fate.Category.VERY_BAD:
-        window.Fate.progress.add(-5);
-        break;
+      case window.Fate.Category.GOOD: window.Fate.progress.add(10); break;
+      case window.Fate.Category.BAD: window.Fate.progress.add(3); break;
+      case window.Fate.Category.VERY_BAD: window.Fate.progress.add(-5); break;
     }
 
     await window.Fate.sleep(300);
     await onDone(fate, ui);
-  });
-}
-
-function awaitUserClick(el, fn) {
-  const handler = async (e) => {
+  }
+  
+  rollBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    el.removeEventListener("click", handler);
-    await fn();
-  };
-  el.addEventListener("click", handler, { once: true });
-}
+    roll();
+  }, { once: true });
+  
+  diceImg.addEventListener("click", (e) => {
+    e.stopPropagation();
+    roll();
+  }, { once: true });
+
+};  
 
 
 async function playDiceOutcomeAnimation({
