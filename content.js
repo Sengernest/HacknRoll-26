@@ -37,16 +37,15 @@ document.addEventListener(
 ); // capture phase
 
 async function applyPunishment(fate) {
-  await window.Fate.punishments.runRandom()
-  // if (fate === window.Fate.Category.VERY_BAD) {
-  //   await window.Fate.punishments.runVeryBad();
-  //   return;
-  // }
+  if (fate === window.Fate.Category.VERY_BAD) {
+    await window.Fate.punishments.runVeryBad();
+    return;
+  }
 
-  // if (fate === window.Fate.Category.BAD) {
-  //   await window.Fate.punishments.runBad();
-  //   return;
-  // }
+  if (fate === window.Fate.Category.BAD) {
+    await window.Fate.punishments.runBad();
+    return;
+  }
 }
 
 // UI
