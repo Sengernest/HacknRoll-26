@@ -28,3 +28,31 @@
   border: 1px solid #ddd;
   cursor: pointer;
 }
+
+
+#fate-progress-container {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  width: 200px;
+  height: 16px;
+  background: #222;
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 999998;
+}
+
+#fate-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+  transition: width .3s ease;
+}
+
+#fate-progress-text {
+  position: absolute;
+  top: -18px;
+  left: 0;
+  font-size: 11px;
+  color: #ccc;
+}
