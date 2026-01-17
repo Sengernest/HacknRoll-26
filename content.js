@@ -25,7 +25,7 @@ document.addEventListener(
     busy = true;
 
     showDice(async (fate) => {
-      if (fate === window.Fate.GOOD) {
+      if (fate === window.Fate.Category.GOOD) {
         perform(pending);
       } else {
         await applyPunishment(fate);
@@ -37,15 +37,16 @@ document.addEventListener(
 ); // capture phase
 
 async function applyPunishment(fate) {
-  if (fate === window.Fate.VERY_BAD) {
-    await window.Fate.punishments.runVeryBad();
-    return;
-  }
+  await window.Fate.punishments.runRandom()
+  // if (fate === window.Fate.Category.VERY_BAD) {
+  //   await window.Fate.punishments.runVeryBad();
+  //   return;
+  // }
 
-  if (fate === window.Fate.BAD) {
-    await window.Fate.punishments.runBad();
-    return;
-  }
+  // if (fate === window.Fate.Category.BAD) {
+  //   await window.Fate.punishments.runBad();
+  //   return;
+  // }
 }
 
 // UI
@@ -64,10 +65,12 @@ function showDice(onDone) {
   document.documentElement.appendChild(overlay);
 
   overlay.querySelector("#btn").onclick = async () => {
-    const roll = 1 + Math.floor(Math.random() * DIE_SIZE);
+    const roll = 1 + Math.floor(Math.random() * window.Fate.DIE_SIZE);
+
     overlay.querySelector("#roll").textContent = String(roll);
 
-    const fate = evaluateFate(roll);
+    console.log("roll:", roll)
+    const fate = window.Fate.evaluateFate(roll);
 
     const { text, className } = window.Fate.FATE_UI[fate];
     result.textContent = text;
