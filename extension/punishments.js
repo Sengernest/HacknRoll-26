@@ -4,10 +4,10 @@ window.Fate.punishments = window.Fate.punishments || {};
 // --------------------------------------------------
 // VERY BAD punishments
 // --------------------------------------------------
-
 window.Fate.punishments.veryBadList = [
+  //loading wheel
   {
-    message: "Bad luck. Fake loading for 10 seconds.",
+    message: "Bad luck. Did you lose connection?",
     run: async () => {
       let soundAudio = null;
       try {
@@ -62,27 +62,11 @@ window.Fate.punishments.veryBadList = [
       if (soundAudio) soundAudio.pause();
     },
   },
-  {
-    message: "Bad luck! Fake loading screen for 10s",
-    run: async () => {
-      const overlay = document.createElement("div");
-      overlay.style.position = "fixed";
-      overlay.style.inset = "0";
-      overlay.style.background = "rgba(0,0,0,0.7)";
-      overlay.style.color = "white";
-      overlay.style.display = "flex";
-      overlay.style.alignItems = "center";
-      overlay.style.justifyContent = "center";
-      overlay.style.zIndex = "999999";
-      overlay.textContent = "Loading...";
-      document.body.appendChild(overlay);
-      await window.Fate.sleep(10000);
-      overlay.remove();
-    },
-  },
+
+  //screen glitch
   {
     message:
-      "💀 Bad luck! Your screen will flip, glitch colors, and play sound for 10 seconds...",
+      "💀 Bad luck! Your website is gg to crash!",
 
     // flip screen
     run: async () => {
@@ -135,8 +119,10 @@ window.Fate.punishments.veryBadList = [
       if (soundAudio) soundAudio.pause();
     },
   },
+  
+  //page not found
   {
-    message: "💀 Full-screen image with music incoming!",
+    message: "💀 Bad Luck! Are you sure you found the correct page?",
     run: async () => {
       let musicAudio = null;
       try {
@@ -170,27 +156,15 @@ window.Fate.punishments.veryBadList = [
       if (musicAudio) musicAudio.pause();
     },
   },
-  {
-    message: "Bad luck. Your mouse clicks will be disabled for 10 seconds.",
-    run: async () => {
-      const blocker = document.createElement("div");
-      blocker.style.position = "fixed";
-      blocker.style.inset = "0";
-      blocker.style.zIndex = "999999";
-      document.body.appendChild(blocker);
-      await window.Fate.sleep(10000);
-      blocker.remove();
-    },
-  },
 ];
 
 // --------------------------------------------------
 // BAD punishments
 // --------------------------------------------------
-
 window.Fate.punishments.badList = [
+  //dodge clicker
   {
-    message: "Bad luck. Try to click.",
+    message: "Bad luck! Try to click.",
     run: async () => {
       let audio = null;
       try {
@@ -258,10 +232,10 @@ window.Fate.punishments.badList = [
       if (audio) audio.pause();
     },
   },
-
+  
+  //rickroll
   {
     message: "Bad luck. A mysterious video appears.",
-    // rickroll
     run: async () => {
       const overlay = document.createElement("div");
       overlay.style.position = "fixed";
@@ -292,8 +266,9 @@ window.Fate.punishments.badList = [
     },
   },
   
+  //gibberish text
   {
-    message: "Bad luck. All text becomes gibberish for 10 seconds.",
+    message: "Bad luck. Can u read?",
     run: async () => {
       const original = new Map();
 
@@ -359,8 +334,10 @@ window.Fate.punishments.badList = [
       }
     },
   },
+  
+  //blur screen with ducks
   {
-    message: "Bad luck. Your screen will be blurred for 10 seconds.",
+    message: "Bad luck. Wait, what's that sound?",
     run: async () => {
       //for blur screen quackers
       function playLoopingDuckSound() {
@@ -375,7 +352,6 @@ window.Fate.punishments.badList = [
           return null;
         }
       }
-      alert("💀 Ducks incoming with sound!");
 
       const duckAudio = playLoopingDuckSound();
 
@@ -452,10 +428,12 @@ window.Fate.punishments.badList = [
       blurWrap.remove();
     },
   },
+  
+  //disable mouseclicks
   {
-    message: "Bad luck. Colors inverted for 10 seconds.",
+    message: "Bad luck, your mouse clicks are disabled!",
     run: async () => {
-      //for disable clicks punishments
+      //for disable clicks punishment
       function playErrorSound() {
         try {
           const url = chrome.runtime.getURL("assets/sounds/errorclick.mp3");
@@ -464,8 +442,6 @@ window.Fate.punishments.badList = [
           audio.play();
         } catch (e) {}
       }
-
-      alert("💀 Bad luck! Your mouse clicks are disabled...");
 
       const blocker = document.createElement("div");
       blocker.style.position = "fixed";
