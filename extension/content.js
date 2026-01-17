@@ -53,18 +53,6 @@ document.addEventListener(
   true
 ); // capture phase
 
-async function applyPunishment(fate, ui) {
-  if (fate === window.Fate.Category.VERY_BAD) {
-    await window.Fate.punishments.runVeryBad(ui);
-    return;
-  }
-
-  if (fate === window.Fate.Category.BAD) {
-    await window.Fate.punishments.runBad(ui);
-    return;
-  }
-}
-
 // UI
 function showDice(onDone) {
   const overlay = document.createElement("div");
