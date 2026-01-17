@@ -13,7 +13,7 @@ window.Fate.progress._state = {
 window.Fate.DIE_SIZE = 20;
 
 const FATE_VERY_BAD = 4; // 1-4
-const FATE_BAD = 8; // 5-8
+const FATE_BAD = 16; // 5-8
 const FATE_GOOD = 20; // 9-20
 
 window.Fate.Category = Object.freeze({

@@ -63,7 +63,13 @@
   left: 50%;
   transform: translateX(-50%);
 
-  z-index: 2147483648; /* above overlay */
+  z-index: 2147483648;
+
+  display: inline-flex;          /* 🔑 shrink-to-fit */
+  align-items: center;
+  justify-content: center;
+
+  white-space: nowrap;           /* 🔑 prevent wrapping */
 
   opacity: 0;
 
@@ -79,6 +85,7 @@
   pointer-events: none;
   user-select: none;
 }
+
 
 .fate-result.show {
   animation: fateResultIn 160ms cubic-bezier(.2,.9,.25,1) forwards;
