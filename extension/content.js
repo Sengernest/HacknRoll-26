@@ -71,7 +71,7 @@ function showDice(onDone) {
   overlay.id = "fate-overlay";
   overlay.innerHTML = `
     <div class="fate-card">
-      <div>🎲 Roll to Click</div>
+      <div>🎲 Decide Your Fate</div>
       <div class="fate-roll" id="roll">?</div>
 
       <div class="fate-result" id="result" aria-live="polite"></div>
