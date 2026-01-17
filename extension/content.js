@@ -9,7 +9,7 @@ document.addEventListener(
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // don't break new tab etc
 
     const el = e.target.closest(
-      "a,button,[role='button'],input[type='submit']"
+      "a,button,[role='button'],input[type='submit']",
     );
     if (!el) return;
 
@@ -50,7 +50,7 @@ document.addEventListener(
       cleanup();
     });
   },
-  true
+  true,
 ); // capture phase
 
 // UI
