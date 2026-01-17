@@ -24,21 +24,64 @@ document.addEventListener(
     pending = describe(el);
     busy = true;
 
-    showDice(async (roll) => {
-      // MVP rule: 1-2 block, 3-6 allow
-      if (roll < 7) {
-        await window.Fate.punishments.runRandom();
-        // blocked
-        cleanup();
-      } else {
-        // allow original action
+    showDice(async (fate) => {
+      if (fate === window.Fate.GOOD) {
         perform(pending);
-        cleanup();
+      } else {
+        await applyPunishment(fate);
       }
+      cleanup();
     });
   },
   true
 ); // capture phase
+
+async function applyPunishment(fate) {
+  if (fate === window.Fate.VERY_BAD) {
+    await window.Fate.punishments.runVeryBad();
+    return;
+  }
+
+  if (fate === window.Fate.BAD) {
+    await window.Fate.punishments.runBad();
+    return;
+  }
+}
+
+// UI
+function showDice(onDone) {
+  const overlay = document.createElement("div");
+  overlay.id = "fate-overlay";
+  overlay.innerHTML = `
+    <div class="fate-card">
+      <div>🎲 Roll to Click</div>
+      <div class="fate-roll" id="roll">?</div>
+      <button class="fate-btn" id="btn">Roll</button>
+      <div style="opacity:.7;margin-top:8px;font-size:12px">1-2 block • 3-6 allow</div>
+      <div class="fate-result" id="result" aria-live="polite"></div>
+    </div>`;
+
+  document.documentElement.appendChild(overlay);
+
+  overlay.querySelector("#btn").onclick = async () => {
+    const roll = 1 + Math.floor(Math.random() * DIE_SIZE);
+    overlay.querySelector("#roll").textContent = String(roll);
+
+    const fate = evaluateFate(roll);
+
+    const { text, className } = window.Fate.FATE_UI[fate];
+    result.textContent = text;
+    result.className = `fate-result show ${className}`;
+
+    await window.Fate.sleep(400);
+    overlay.remove();
+    await onDone(roll);
+  };
+}
+
+// =============
+// Boilerplate
+// =============
 
 function cleanup() {
   pending = null;
@@ -73,27 +116,4 @@ function perform(a) {
   }
 
   a.el.click();
-}
-
-function showDice(onDone) {
-  const overlay = document.createElement("div");
-  overlay.id = "fate-overlay";
-  overlay.innerHTML = `
-    <div class="fate-card">
-      <div>🎲 Roll to Click</div>
-      <div class="fate-roll" id="roll">?</div>
-      <button class="fate-btn" id="btn">Roll</button>
-      <div style="opacity:.7;margin-top:8px;font-size:12px">1-2 block • 3-6 allow</div>
-    </div>
-  `;
-  document.documentElement.appendChild(overlay);
-
-  overlay.querySelector("#btn").onclick = async () => {
-    const roll = 1 + Math.floor(Math.random() * 6);
-    overlay.querySelector("#roll").textContent = String(roll);
-
-    await window.Fate.sleep(400);
-    overlay.remove();
-    await onDone(roll);
-  };
 }
