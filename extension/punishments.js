@@ -1,6 +1,37 @@
 window.Fate = window.Fate || {};
 window.Fate.punishments = window.Fate.punishments || {};
 
+// --- AI text pool (AI-only + instant display) ---
+window.Fate.punishments._aiPool = [];
+window.Fate.punishments._aiFilling = false;
+
+window.Fate.punishments._refillAIPool = async function refillAIPool() {
+  if (window.Fate.punishments._aiFilling) return;
+  window.Fate.punishments._aiFilling = true;
+
+  try {
+    const resp = await fetch("http://localhost:3000/cursed-text-batch", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ n: 5 }),
+    });
+
+    const data = await resp.json();
+    const arr = data?.results;
+
+    if (Array.isArray(arr) && arr.length) {
+      window.Fate.punishments._aiPool.push(...arr);
+    }
+  } catch (e) {
+    // ignore (server down etc)
+  } finally {
+    window.Fate.punishments._aiFilling = false;
+  }
+};
+
+// prefill once at startup
+window.Fate.punishments._refillAIPool();
+
 window.Fate.punishments.veryBadList = [
   //fake loading
   async function punishFakeLoading() {
@@ -30,6 +61,68 @@ window.Fate.punishments.veryBadList = [
   //rick roll
   async function punishRickroll() {
     window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
+  },
+
+  // ✅ AI cursed text BUT instant: overlay now, AI text later
+  async function punishCursedTextAI() {
+    // ensure pool refills in background if low
+    if (window.Fate.punishments._aiPool.length < 2) {
+      window.Fate.punishments._refillAIPool();
+    }
+
+    // AI-only: pull from pool
+    let text = window.Fate.punishments._aiPool.shift();
+
+    // If pool empty, we must wait for AI (no local fallback)
+    if (!text) {
+      // Show a simple waiting overlay (not gibberish)
+      const waitOverlay = document.createElement("div");
+      waitOverlay.style.position = "fixed";
+      waitOverlay.style.inset = "0";
+      waitOverlay.style.zIndex = "999999";
+      waitOverlay.style.background = "rgba(0,0,0,0.95)";
+      waitOverlay.style.color = "#00ff99";
+      waitOverlay.style.fontFamily = "monospace";
+      waitOverlay.style.fontSize = "18px";
+      waitOverlay.style.padding = "24px";
+      waitOverlay.style.whiteSpace = "pre-wrap";
+      waitOverlay.textContent = "⌛ summoning cursed text…";
+      document.body.appendChild(waitOverlay);
+
+      try {
+        const resp = await fetch("http://localhost:3000", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nonce: Date.now() }),
+        });
+        const j = await resp.json();
+        text = j?.text || "▓░█ ⟟ ⌁ ⌖ ⧖";
+      } catch (e) {
+        text = "▓░█ ⟟ ⌁ ⌖ ⧖";
+      }
+
+      waitOverlay.textContent = text;
+      await window.Fate.sleep(2000);
+      waitOverlay.remove();
+      return;
+    }
+
+    // Show instantly from AI pool
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.inset = "0";
+    overlay.style.zIndex = "999999";
+    overlay.style.background = "rgba(0,0,0,0.95)";
+    overlay.style.color = "#00ff99";
+    overlay.style.fontFamily = "monospace";
+    overlay.style.fontSize = "18px";
+    overlay.style.padding = "24px";
+    overlay.style.whiteSpace = "pre-wrap";
+    overlay.textContent = text;
+
+    document.body.appendChild(overlay);
+    await window.Fate.sleep(2000);
+    overlay.remove();
   },
 ];
 
@@ -104,11 +197,10 @@ window.Fate.punishments.runVeryBad = async function runVeryBad() {
   await p();
 };
 
-
-
-/*window.Fate.punishments.runRandom = async function runRandomPunishment() {
-  const arr = window.Fate.punishments.list;
-  const p = arr[4];
+//use this to test ai
+/*window.Fate.punishments.runRandom = async function runRandom() {
+  const arr = window.Fate.punishments.veryBadList;
+  const p = arr[3];
   //const p = arr[Math.floor(Math.random() * arr.length)];
   await p();
 };*/
