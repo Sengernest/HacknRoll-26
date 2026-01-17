@@ -27,7 +27,7 @@ document.addEventListener(
     showDice(async (fate, ui) => {
       if (fate === window.Fate.Category.GOOD) {
         ui.showMessage("Success!");
-        await window.Fate.sleep(400);
+        await window.Fate.sleep(500);
         ui.remove();
         perform(pending);
         cleanup();
@@ -40,7 +40,7 @@ document.addEventListener(
           : window.Fate.punishments.pickBad();
 
       ui.showMessage(p?.message ?? "Bad luck.");
-      await window.Fate.sleep(700);
+      await window.Fate.sleep(1500);
       ui.remove();
 
       if (p && typeof p.run === "function") {
