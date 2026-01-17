@@ -99,8 +99,46 @@
 
 #fate-progress-text {
   position: absolute;
-  top: -18px;
-  left: 0;
-  font-size: 11px;
-  color: #ccc;
+  left: 50%;
+  top: -12px;
+  transform: translateX(-50%) translateY(-8px) scale(.98);
+  opacity: 0;
+
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  font-size: 12px;
+  text-transform: uppercase;
+
+  box-shadow: 0 12px 28px rgba(0,0,0,.18);
+  pointer-events: none;
+  user-select: none;
+}
+
+.fate-result.show{
+  animation: fateResultIn 160ms cubic-bezier(.2,.9,.25,1) forwards;
+}
+
+@keyframes fateResultIn{
+  from { opacity: 0; transform: translateX(-50%) translateY(-8px) scale(.98); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0)    scale(1.02); }
+}
+
+.fate-result.good{
+  background: #eafff1;
+  color: #0f7a36;
+  border: 1px solid #bff0cf;
+}
+
+.fate-result.bad{
+  background: #fff7e6;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.fate-result.very-bad{
+  background: #ffecec;
+  color: #b42318;
+  border: 1px solid #ffc7c7;
 }

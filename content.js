@@ -24,13 +24,28 @@ function attachClickInterceptor() {
     "click",
     (e) => {
       if (!shouldIntercept(e)) return;
+document.addEventListener(
+  "click",
+  (e) => {
+    if (busy) return;
+    if (e.button !== 0) return; // left click only
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // don't break new tab etc
 
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
+    const el = e.target.closest(
+      "a,button,[role='button'],input[type='submit']"
+    );
+    if (!el) return;
 
-      FateState.pendingAction = describeAction(e.target);
-      FateState.busy = true;
+    // ignore our own overlay
+    if (el.closest("#fate-overlay")) return;
+
+    // STOP the click
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    pending = describe(el);
+    busy = true;
 
       showDiceOverlay(async (roll) => {
         await resolveRoll(roll);
@@ -59,15 +74,14 @@ function shouldIntercept(e) {
  * DICE RESOLUTION
  *************************************************/
 
-
 async function resolveRoll(roll) {
   if (roll <= 2) {
     await window.Fate?.punishments?.runRandom?.();
-    await window.Fate?.progress?.add(-5);
+    FateProgress.add(-5);
     return;
   }
 
-  await window.Fate?.progress?.add(10);
+  FateProgress.add(10);
   performAction(FateState.pendingAction);
 }
 
@@ -114,48 +128,73 @@ function performAction(action) {
   }
 }
 
-/*************************************************
- * DICE UI
- *************************************************/
-
-function showDiceOverlay(onDone) {
+// UI
+function showDice(onDone) {
   const overlay = document.createElement("div");
   overlay.id = "fate-overlay";
-
   overlay.innerHTML = `
     <div class="fate-card">
-      <div class="fate-title">🎲 Roll to Act</div>
-      <div class="fate-roll" id="fate-roll">?</div>
-      <button id="fate-roll-btn">Roll</button>
-      <div class="fate-rule">1–2 fail • 3–6 succeed</div>
-    </div>
-  `;
+      <div>🎲 Roll to Click</div>
+      <div class="fate-roll" id="roll">?</div>
+      <button class="fate-btn" id="btn">Roll</button>
+      <div style="opacity:.7;margin-top:8px;font-size:12px">1-2 block • 3-6 allow</div>
+      <div class="fate-result" id="result" aria-live="polite"></div>
+    </div>`;
 
   document.documentElement.appendChild(overlay);
 
-  overlay.querySelector("#fate-roll-btn").onclick = async () => {
-    const roll = rollDice();
-    overlay.querySelector("#fate-roll").textContent = roll;
+  overlay.querySelector("#btn").onclick = async () => {
+    const roll = 1 + Math.floor(Math.random() * window.Fate.DIE_SIZE);
 
-    await sleep(400);
+    overlay.querySelector("#roll").textContent = String(roll);
+
+    const fate = window.Fate.evaluateFate(roll);
+
+    const { text, className } = window.Fate.FATE_UI[fate];
+    result.textContent = text;
+    result.className = `fate-result show ${className}`;
+
+    await window.Fate.sleep(400);
     overlay.remove();
-    await onDone(roll);
+    await onDone(fate);
   };
 }
 
-function rollDice(sides = 6) {
-  return 1 + Math.floor(Math.random() * sides);
-}
-
-/*************************************************
- * UTIL
- *************************************************/
+// =============
+// Boilerplate
+// =============
 
 function cleanup() {
-  FateState.pendingAction = null;
-  FateState.busy = false;
+  pending = null;
+  busy = false;
 }
 
-function sleep(ms) {
-  return new Promise((r) => setTimeout(r, ms));
+function describe(el) {
+  if (el.tagName.toLowerCase() === "a") {
+    return { type: "NAV", href: el.getAttribute("href"), el };
+  }
+  if (el.matches("input[type='submit']") && el.form) {
+    return { type: "FORM", form: el.form };
+  }
+  return { type: "CLICK", el };
+}
+
+function perform(a) {
+  if (!a) return;
+
+  if (a.type === "NAV") {
+    if (a.href && !a.href.startsWith("javascript:")) {
+      window.location.href = a.href;
+    } else {
+      a.el.click();
+    }
+    return;
+  }
+
+  if (a.type === "FORM") {
+    a.form.submit();
+    return;
+  }
+
+  a.el.click();
 }
