@@ -26,7 +26,8 @@ document.addEventListener(
 
     showDice(async (fate) => {
       if (fate === window.Fate.Category.GOOD) {
-        perform(pending);
+        await applyPunishment(fate);
+        //perform(pending);
       } else {
         await applyPunishment(fate);
       }

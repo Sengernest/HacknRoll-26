@@ -2,7 +2,7 @@ window.Fate = window.Fate || {};
 window.Fate.punishments = window.Fate.punishments || {};
 
 // --- AI text pool (AI-only + instant display) ---
-window.Fate.punishments._aiPool = [];
+/*window.Fate.punishments._aiPool = [];
 window.Fate.punishments._aiFilling = false;
 
 window.Fate.punishments._refillAIPool = async function refillAIPool() {
@@ -30,8 +30,21 @@ window.Fate.punishments._refillAIPool = async function refillAIPool() {
 };
 
 // prefill once at startup
-window.Fate.punishments._refillAIPool();
+window.Fate.punishments._refillAIPool();*/
 
+//for freeze punishment
+function playErrorSound() {
+  try {
+    const url = chrome.runtime.getURL("assets/sounds/errorclick.mp3");
+    const audio = new Audio(url);
+    audio.volume = 0.4;
+    audio.play();
+  } catch (e) {
+    // ignore if blocked
+  }
+}
+
+//very bad punishments
 window.Fate.punishments.veryBadList = [
   //fake loading
   async function punishFakeLoading() {
@@ -64,7 +77,7 @@ window.Fate.punishments.veryBadList = [
   },
 
   // ✅ AI cursed text BUT instant: overlay now, AI text later
-  async function punishCursedTextAI() {
+  /*async function punishCursedTextAI() {
     // ensure pool refills in background if low
     if (window.Fate.punishments._aiPool.length < 2) {
       window.Fate.punishments._refillAIPool();
@@ -123,9 +136,10 @@ window.Fate.punishments.veryBadList = [
     document.body.appendChild(overlay);
     await window.Fate.sleep(2000);
     overlay.remove();
-  },
+  },*/
 ];
 
+//bad punishments
 window.Fate.punishments.badList = [
   //blur screen
   async function punishBlur() {
@@ -138,22 +152,35 @@ window.Fate.punishments.badList = [
   //invert colors
   async function punishInvert() {
     alert(
-      "💀 Bad luck! The colors of your screen will be inverted for 10 seconds..."
+      "💀 Bad luck! The colors of your screen will be inverted for 10 seconds...",
     );
     document.body.style.filter = "invert(1) hue-rotate(180deg)";
     await window.Fate.sleep(10000);
     document.body.style.filter = "";
   },
 
-  //freeze clicks briefly
+  // freeze clicks + MP3 sound on attempt
   async function punishFreeze() {
     alert("💀 Bad luck! Your mouse clicks will be disabled for 10 seconds...");
+
     const blocker = document.createElement("div");
     blocker.style.position = "fixed";
     blocker.style.inset = "0";
     blocker.style.zIndex = "999999";
     document.body.appendChild(blocker);
+
+    const onAttempt = (e) => {
+      playErrorSound();
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+    };
+
+    document.addEventListener("click", onAttempt, true);
+
     await window.Fate.sleep(10000);
+
+    document.removeEventListener("click", onAttempt, true);
     blocker.remove();
   },
 
@@ -164,6 +191,7 @@ window.Fate.punishments.badList = [
   },*/
 ];
 
+//shuffling algo
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -171,36 +199,33 @@ function shuffle(arr) {
   }
 }
 
-window.Fate.punishments._bag = [];
+window.Fate.punishments._badBag = [];
+window.Fate.punishments._veryBadBag = [];
 
-window.Fate.punishments.runBad = async function runBad() {
-  // Refill bag if empty
-  if (window.Fate.punishments._bag.length === 0) {
-    window.Fate.punishments._bag = [...window.Fate.punishments.badList];
-    shuffle(window.Fate.punishments._bag);
+window.Fate.punishments.runBad = async function () {
+  if (window.Fate.punishments._badBag.length === 0) {
+    window.Fate.punishments._badBag = [...window.Fate.punishments.badList];
+    shuffle(window.Fate.punishments._badBag);
   }
-
-  // Draw one punishment
-  const p = window.Fate.punishments._bag.pop();
+  const p = window.Fate.punishments._badBag.pop();
   await p();
 };
 
-window.Fate.punishments.runVeryBad = async function runVeryBad() {
-  // Refill bag if empty
-  if (window.Fate.punishments._bag.length === 0) {
-    window.Fate.punishments._bag = [...window.Fate.punishments.veryBadList];
-    shuffle(window.Fate.punishments._bag);
+window.Fate.punishments.runVeryBad = async function () {
+  if (window.Fate.punishments._veryBadBag.length === 0) {
+    window.Fate.punishments._veryBadBag = [
+      ...window.Fate.punishments.veryBadList,
+    ];
+    shuffle(window.Fate.punishments._veryBadBag);
   }
-
-  // Draw one punishment
-  const p = window.Fate.punishments._bag.pop();
+  const p = window.Fate.punishments._veryBadBag.pop();
   await p();
 };
 
-//use this to test ai
+//testing
 /*window.Fate.punishments.runRandom = async function runRandom() {
-  const arr = window.Fate.punishments.veryBadList;
-  const p = arr[3];
+  const arr = window.Fate.punishments.badList;
+  const p = arr[2];
   //const p = arr[Math.floor(Math.random() * arr.length)];
   await p();
 };*/
