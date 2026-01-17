@@ -9,7 +9,7 @@ document.addEventListener(
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // don't break new tab etc
 
     const el = e.target.closest(
-      "a,button,[role='button'],input[type='submit']"
+      "a,button,[role='button'],input[type='submit']",
     );
     if (!el) return;
 
@@ -26,24 +26,26 @@ document.addEventListener(
 
     showDice(async (fate) => {
       if (fate === window.Fate.Category.GOOD) {
-        await applyPunishment(fate);
-        //perform(pending);
+        //await applyPunishment(fate);
+        perform(pending);
       } else {
         await applyPunishment(fate);
       }
       cleanup();
     });
   },
-  true
+  true,
 ); // capture phase
 
 async function applyPunishment(fate) {
   if (fate === window.Fate.Category.VERY_BAD) {
+    //await window.Fate.punishments.runRandom();
     await window.Fate.punishments.runVeryBad();
     return;
   }
 
   if (fate === window.Fate.Category.BAD) {
+    //await window.Fate.punishments.runRandom();
     await window.Fate.punishments.runBad();
     return;
   }
