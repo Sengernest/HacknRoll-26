@@ -106,7 +106,24 @@ window.Fate.punishments.badList = [
   {
     message: "Bad luck. A mysterious video appears.",
     run: async () => {
-      window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
+      const overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.inset = "0";
+      overlay.style.background = "rgba(0,0,0,0.7)";
+      overlay.style.color = "white";
+      overlay.style.display = "flex";
+      overlay.style.alignItems = "center";
+      overlay.style.justifyContent = "center";
+      overlay.style.zIndex = "999999";
+      overlay.innerHTML = `
+    <iframe width="1024" height="576"
+      src="https://www.youtube.com/embed/klfT41uZniI?autoplay=1&controls=0&rel=0"
+      title="YouTube video player" frameBorder="0"
+      allow="autoplay; encrypted-media;"
+      referrerPolicy="strict-origin-when-cross-origin"
+      allowFullScreen></iframe>
+  `;
+      document.body.appendChild(overlay);
     },
   },
   {
