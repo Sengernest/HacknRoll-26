@@ -57,7 +57,6 @@ function showDice(onDone) {
       <div>🎲 Roll to Click</div>
       <div class="fate-roll" id="roll">?</div>
       <button class="fate-btn" id="btn">Roll</button>
-      <div style="opacity:.7;margin-top:8px;font-size:12px">1-2 block • 3-6 allow</div>
       <div class="fate-result" id="result" aria-live="polite"></div>
     </div>`;
 
