@@ -71,6 +71,7 @@ function showDice(onDone) {
 
     const fate = window.Fate.evaluateFate(roll);
 
+    const result = overlay.querySelector("#result");
     const { text, className } = window.Fate.FATE_UI[fate];
     result.textContent = text;
     result.className = `fate-result show ${className}`;
