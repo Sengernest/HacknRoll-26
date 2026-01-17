@@ -1,6 +1,9 @@
 let busy = false;
 let pending = null;
 
+
+window.Fate.progress.init({ max: 100 });
+
 document.addEventListener(
   "click",
   (e) => {
@@ -26,8 +29,8 @@ document.addEventListener(
 
     showDice(async (fate, ui) => {
       if (fate === window.Fate.Category.GOOD) {
-        ui.showMessage("Success!");
-        await window.Fate.sleep(500);
+        ui.setResult("Success!");
+        await window.Fate.sleep(1500);
         ui.remove();
         perform(pending);
         cleanup();
@@ -38,8 +41,7 @@ document.addEventListener(
         fate === window.Fate.Category.VERY_BAD
           ? window.Fate.punishments.pickVeryBad()
           : window.Fate.punishments.pickBad();
-      
-      ui.showMessage(p?.message ?? "Bad luck.");
+      ui.setResult(p?.message ?? "Bad luck.");
       await window.Fate.sleep(1500);
       ui.remove();
 
@@ -51,34 +53,26 @@ document.addEventListener(
     });
   },
   true,
-); // capture phase
-
+  ); // capture phase
 // UI
 function showDice(onDone) {
+  const initialSrc = chrome.runtime.getURL(
+    "assets/diceroll-1/0001.png"
+  );
   const overlay = document.createElement("div");
   overlay.id = "fate-overlay";
   overlay.innerHTML = `
     <div class="fate-card">
-      <div>🎲 Decide Your Fate</div>
-      <div class="fate-roll" id="roll">?</div>
-
+      <img id="dice-img" src="${initialSrc}" />
       <div class="fate-result" id="result" aria-live="polite"></div>
-      <div class="fate-msg" id="msg" aria-live="polite"></div>
-
-      <button class="fate-btn" id="btn">Roll</button>
     </div>`;
 
   document.documentElement.appendChild(overlay);
 
-  const rollElem = overlay.querySelector("#roll");
+  const diceImg = overlay.querySelector("#dice-img");
   const resultElem = overlay.querySelector("#result");
-  const messageElem = overlay.querySelector("#msg");
-  const button = overlay.querySelector("#btn");
 
   const ui = {
-    showMessage(text) {
-      messageElem.textContent = text ?? "";
-    },
     setResult(fate) {
       const u = window.Fate.FATE_UI[fate] ?? { text: "???", className: "" };
       resultElem.textContent = u.text;
@@ -89,18 +83,67 @@ function showDice(onDone) {
     },
   };
 
-  button.onclick = async () => {
-    button.style.display = "none";
-    const roll = 1 + Math.floor(Math.random() * window.Fate.DIE_SIZE);
-    rollElem.textContent = String(roll);
+  (async () => {
+    // START phase
+    await window.Fate.sleep(150);
 
+    // ROLL phase
+    const roll =
+      1 + Math.floor(Math.random() * window.Fate.DIE_SIZE);
+
+    await playDiceOutcomeAnimation({
+      imgEl: diceImg,
+      outcome: roll,
+      frameCount: 72,
+      fps: 60,
+    });
+
+    // RESULT handoff (NO UI rendering here)
     const fate = window.Fate.evaluateFate(roll);
+
     ui.setResult(fate);
 
-    await window.Fate.sleep(50);
+    switch (fate) {
+      case window.Fate.Category.GOOD:
+        window.Fate.progress.add(10);
+        break;
+
+      case window.Fate.Category.BAD:
+        window.Fate.progress.add(3);
+        break;
+
+      case window.Fate.Category.VERY_BAD:
+        window.Fate.progress.add(-5);
+        break;
+    }
+    await window.Fate.sleep(300);
     await onDone(fate, ui);
-  };
+  })();
 }
+
+async function playDiceOutcomeAnimation({
+  imgEl,
+  outcome,
+  frameCount = 72,
+  fps = 60,
+}) {
+  const frameDelay = 1000 / fps;
+
+  for (let i = 1; i <= frameCount; i++) {
+    const frame = String(i).padStart(4, "0");
+    const src = chrome.runtime.getURL(
+      `assets/diceroll-${outcome}/${frame}.png`
+    );
+
+    imgEl.src = src;
+
+    // DEBUG (temporary)
+    // console.log("Loading frame:", src);
+
+    await window.Fate.sleep(frameDelay);
+  }
+}
+
 
 // =============
 // Boilerplate
