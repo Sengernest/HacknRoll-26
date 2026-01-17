@@ -26,7 +26,7 @@ document.addEventListener(
 
     showDice(async (roll) => {
       // MVP rule: 1-2 block, 3-6 allow
-      if (roll <= 2) {
+      if (roll < 7) {
         await window.Fate.punishments.runRandom();
         // blocked
         cleanup();
