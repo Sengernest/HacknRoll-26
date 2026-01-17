@@ -65,6 +65,8 @@ function showDice(onDone) {
   const overlay = document.createElement("div");
   overlay.id = "fate-overlay";
   overlay.innerHTML = `
+    <div class="fate-rollnum" id="rollnum"></div>
+
     <div class="fate-card">
       <img id="dice-img" src="${initialSrc}" style="cursor:pointer" />
       <button class="fate-btn" id="roll-btn">Roll</button>
@@ -76,6 +78,7 @@ function showDice(onDone) {
 
   const diceImg = overlay.querySelector("#dice-img");
   const rollBtn = overlay.querySelector("#roll-btn");
+  const rollNumEl = overlay.querySelector("#rollnum");
   const resultElem = overlay.querySelector("#result");
 
   const ui = {
@@ -104,6 +107,9 @@ function showDice(onDone) {
       frameCount: 72,
       fps: 60,
     });
+    
+    rollNumEl.textContent = String(rollVal);
+    rollNumEl.style.display = "block";
 
     const fate = window.Fate.evaluateFate(rollVal);
 
@@ -116,7 +122,7 @@ function showDice(onDone) {
     await window.Fate.sleep(300);
     await onDone(fate, ui);
   }
-  
+
   rollBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     roll();
