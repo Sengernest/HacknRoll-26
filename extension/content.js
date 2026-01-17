@@ -38,7 +38,7 @@ document.addEventListener(
         fate === window.Fate.Category.VERY_BAD
           ? window.Fate.punishments.pickVeryBad()
           : window.Fate.punishments.pickBad();
-
+      
       ui.showMessage(p?.message ?? "Bad luck.");
       await window.Fate.sleep(1500);
       ui.remove();
