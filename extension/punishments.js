@@ -175,11 +175,72 @@ window.Fate.punishments.veryBadList = [
 // --------------------------------------------------
 // BAD punishments
 // --------------------------------------------------
-
 window.Fate.punishments.badList = [
+
+  //dodge clicks
+  async function punishDodgeClickablesWithSound() {
+    alert("💀 Try clicking the buttons… if you can! Audio activated!");
+
+    let audio = null;
+    try {
+      const url = chrome.runtime.getURL("assets/sounds/bruh.mp3"); 
+      audio = new Audio(url);
+      audio.loop = true;     
+      audio.volume = 0.4;    
+      audio.play().catch(() => {}); 
+    } catch (e) {
+      console.warn("Failed to play audio:", e);
+      audio = null;
+    }
+
+    const clickables = Array.from(document.querySelectorAll("button, a, input[type=button], input[type=submit]"));
+
+    const positions = new Map();
+    clickables.forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      positions.set(el, { left: rect.left, top: rect.top, position: el.style.position || "" });
+      
+      if (window.getComputedStyle(el).position === "static") {
+        el.style.position = "absolute";
+        el.style.left = rect.left + "px";
+        el.style.top = rect.top + "px";
+      }
+    });
+
+    function dodgeListener(e) {
+      clickables.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const distance = Math.hypot(e.clientX - (rect.left + rect.width / 2), e.clientY - (rect.top + rect.height / 2));
+        if (distance < 100) { 
+          const newLeft = Math.random() * (window.innerWidth - rect.width);
+          const newTop = Math.random() * (window.innerHeight - rect.height);
+          el.style.left = newLeft + "px";
+          el.style.top = newTop + "px";
+        }
+      });
+    }
+
+    document.addEventListener("mousemove", dodgeListener);
+
+    await window.Fate.sleep(10000);
+
+    document.removeEventListener("mousemove", dodgeListener);
+    clickables.forEach((el) => {
+      const orig = positions.get(el);
+      el.style.left = orig.left + "px";
+      el.style.top = orig.top + "px";
+      if (orig.position) el.style.position = orig.position;
+      else el.style.position = "";
+    });
+
+    if (audio) audio.pause();
+  },
+
+
   //BLUR WITH DUCKS
   async function punishBlur() {
     //for blur screen quackers
+
     function playLoopingDuckSound() {
       try {
         const url = chrome.runtime.getURL("assets/sounds/quackers.mp3");
