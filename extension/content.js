@@ -30,10 +30,23 @@ document.addEventListener(
         await window.Fate.sleep(400);
         ui.remove();
         perform(pending);
-      } else {
-        await applyPunishment(fate, ui);
-        ui.remove();
+        cleanup();
+        return;
       }
+
+      const p =
+        fate === window.Fate.Category.VERY_BAD
+          ? window.Fate.punishments.pickVeryBad()
+          : window.Fate.punishments.pickBad();
+
+      ui.showMessage(p?.message ?? "Bad luck.");
+      await window.Fate.sleep(700);
+      ui.remove();
+
+      if (p && typeof p.run === "function") {
+        await p.run();
+      }
+
       cleanup();
     });
   },
@@ -95,7 +108,6 @@ function showDice(onDone) {
     const fate = window.Fate.evaluateFate(roll);
     ui.setResult(fate);
 
-    // let the UI update before heavy stuff
     await window.Fate.sleep(50);
 
     await onDone(fate, ui);
