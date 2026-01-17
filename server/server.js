@@ -1,74 +1,44 @@
 import express from "express";
-import cors from "cors";
+import dotenv from "dotenv";
+import { GoogleGenAI } from "@google/genai";
+
+dotenv.config();
 
 const app = express();
-app.use(cors());
 app.use(express.json());
 
-// POST http://localhost:3000/cursed-text
-app.post("/cursed-text", async (req, res) => {
+// Initialize Gemini client
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
+
+app.post("/chat", async (req, res) => {
   try {
-    const themes = [
-      "tarot runes",
-      "glitch terminal",
-      "alien HUD",
-      "corrupted OS prophecy",
-      "machine cult",
-      "ancient circuit scripture",
-    ];
+    const userMessage = req.body.message;
 
-    const theme = themes[Math.floor(Math.random() * themes.length)];
-    const nonce = `${Date.now()}-${Math.random()}`;
-
-    const r = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${
-        process.env.AIzaSyD2pGx-oWCoFphP8vqPpWcyvVKGMAeKXx8
-      }`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: "user",
-              parts: [
-                {
-                  text:
-                    `Theme: ${theme}\nNonce: ${nonce}\n` +
-                    "Generate 10–14 lines of cursed UI gibberish.\n" +
-                    "Use symbols like ▓░█ ⟟ ⌁ ⌖ ⧖.\n" +
-                    "Avoid real words longer than 6 letters.\n" +
-                    "Plain text only.",
-                },
-              ],
-            },
-          ],
-          generationConfig: {
-            temperature: 1.2,
-            maxOutputTokens: 300,
-          },
-        }),
-      }
-    );
-
-    if (!r.ok) {
-      const err = await r.text();
-      console.error("Gemini error:", err);
-      return res.json({ text: "▓░█ ⟟ ⌁ ⌖ ⧖" });
+    if (!userMessage) {
+      return res.status(400).json({ error: "Message is required" });
     }
 
-    const data = await r.json();
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: userMessage }],
+        },
+      ],
+    });
 
-    const text =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text || "▓░█ ⟟ ⌁ ⌖ ⧖";
-
-    res.json({ text });
-  } catch (e) {
-    console.error("Server error:", e);
-    res.json({ text: "▓░█ ⟟ ⌁ ⌖ ⧖" });
+    res.json({
+      reply: response.text ?? "No response from Gemini",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Gemini request failed" });
   }
 });
 
-app.listen(3000, () =>
-  console.log("Gemini server running on http://localhost:3000")
-);
+app.listen(process.env.PORT, () => {
+  console.log(`Gemini backend running on port ${process.env.PORT}`);
+});
