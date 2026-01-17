@@ -52,33 +52,74 @@ async function applyPunishment(fate) {
 function showDice(onDone) {
   const overlay = document.createElement("div");
   overlay.id = "fate-overlay";
+
+  const initialSrc = chrome.runtime.getURL(
+    "assets/diceroll-1/0001.png"
+  );
+
   overlay.innerHTML = `
-    <div class="fate-card">
-      <div>🎲 Roll to Click</div>
-      <div class="fate-roll" id="roll">?</div>
-      <button class="fate-btn" id="btn">Roll</button>
+    <div class="fate-fullscreen">
+      <img id="dice-img" src="${initialSrc}" />
+
       <div class="fate-result" id="result" aria-live="polite"></div>
-    </div>`;
+    </div>
+  `;
 
   document.documentElement.appendChild(overlay);
 
-  overlay.querySelector("#btn").onclick = async () => {
-    const roll = 1 + Math.floor(Math.random() * window.Fate.DIE_SIZE);
+  const diceImg = overlay.querySelector("#dice-img");
+  const result = overlay.querySelector("#result");
 
-    overlay.querySelector("#roll").textContent = String(roll);
+  // Immediately roll (no button)
+  (async () => {
+    const roll =
+      1 + Math.floor(Math.random() * window.Fate.DIE_SIZE);; // replace later with RNG
+
+    await playDiceOutcomeAnimation({
+      imgEl: diceImg,
+      outcome: roll,
+      frameCount: 72,
+      fps: 60,
+    });
 
     const fate = window.Fate.evaluateFate(roll);
-
-    const result = overlay.querySelector("#result");
     const { text, className } = window.Fate.FATE_UI[fate];
-    result.textContent = text;
+
+    result.textContent = `${text} (Rolled ${roll})`;
     result.className = `fate-result show ${className}`;
 
-    await window.Fate.sleep(400);
+    await window.Fate.sleep(800);
     overlay.remove();
     await onDone(fate);
-  };
+  })();
 }
+
+
+
+
+async function playDiceOutcomeAnimation({
+  imgEl,
+  outcome,
+  frameCount = 72,
+  fps = 60,
+}) {
+  const frameDelay = 1000 / fps;
+
+  for (let i = 1; i <= frameCount; i++) {
+    const frame = String(i).padStart(4, "0");
+    const src = chrome.runtime.getURL(
+      `assets/diceroll-${outcome}/${frame}.png`
+    );
+
+    imgEl.src = src;
+
+    // DEBUG (temporary)
+    // console.log("Loading frame:", src);
+
+    await window.Fate.sleep(frameDelay);
+  }
+}
+
 
 // =============
 // Boilerplate

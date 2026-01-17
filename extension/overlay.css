@@ -2,26 +2,45 @@
   position: fixed;
   inset: 0;
   z-index: 2147483647;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.45);
+
+  background: rgba(0, 0, 0, 0.65); /* darker for drama */
   font-family: system-ui, Arial;
 }
 
+
 .fate-card {
-  width: 320px;
-  background: white;
-  border-radius: 16px;
-  padding: 18px 20px;
+  width: auto;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
   text-align: center;
   position: relative;
 }
 
+
 .fate-roll {
-  font-size: 56px;
-  margin: 10px 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.fate-roll img {
+  width: min(60vw, 60vh);   /* responsive, big */
+  max-width: 512px;        /* matches source size */
+  max-height: 512px;
+
+  height: auto;
+  object-fit: contain;
+
+  user-select: none;
+  pointer-events: none;
+}
+
 
 .fate-btn {
   padding: 10px 14px;
@@ -31,24 +50,28 @@
 }
 
 /* SUCCESS/FAIL toast */
-.fate-result{
-  position: absolute;
-  left: 50%;
-  top: -12px;
-  transform: translateX(-50%) translateY(-8px) scale(.98);
+.fate-result {
+  position: relative;      /* no longer absolute */
+  left: auto;
+  top: auto;
+
+  margin-top: 24px;
+  transform: none;
   opacity: 0;
 
-  padding: 8px 12px;
+  padding: 12px 20px;
   border-radius: 999px;
+
   font-weight: 800;
   letter-spacing: .12em;
-  font-size: 12px;
+  font-size: 18px;         /* bigger */
   text-transform: uppercase;
 
-  box-shadow: 0 12px 28px rgba(0,0,0,.18);
+  box-shadow: 0 12px 28px rgba(0,0,0,.25);
   pointer-events: none;
   user-select: none;
 }
+
 
 .fate-result.show{
   animation: fateResultIn 160ms cubic-bezier(.2,.9,.25,1) forwards;
@@ -76,3 +99,5 @@
   color: #b42318;
   border: 1px solid #ffc7c7;
 }
+
+
