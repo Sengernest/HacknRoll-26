@@ -102,6 +102,7 @@ function showDice(onDone) {
   };
 
   button.onclick = async () => {
+    button.style.display = "none";
     const roll = 1 + Math.floor(Math.random() * window.Fate.DIE_SIZE);
     rollElem.textContent = String(roll);
 
@@ -109,7 +110,6 @@ function showDice(onDone) {
     ui.setResult(fate);
 
     await window.Fate.sleep(50);
-
     await onDone(fate, ui);
   };
 }
