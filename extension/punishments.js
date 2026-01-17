@@ -2,7 +2,7 @@ window.Fate = window.Fate || {};
 window.Fate.punishments = window.Fate.punishments || {};
 
 // --- AI text pool (AI-only + instant display) ---
-window.Fate.punishments._aiPool = [];
+/*window.Fate.punishments._aiPool = [];
 window.Fate.punishments._aiFilling = false;
 
 window.Fate.punishments._refillAIPool = async function refillAIPool() {
@@ -30,8 +30,21 @@ window.Fate.punishments._refillAIPool = async function refillAIPool() {
 };
 
 // prefill once at startup
-window.Fate.punishments._refillAIPool();
+window.Fate.punishments._refillAIPool();*/
 
+//for freeze punishment
+function playErrorSound() {
+  try {
+    const url = chrome.runtime.getURL("assets/sounds/errorclick.mp3");
+    const audio = new Audio(url);
+    audio.volume = 0.4;
+    audio.play();
+  } catch (e) {
+    // ignore if blocked
+  }
+}
+
+//very bad punishments
 window.Fate.punishments.veryBadList = [
   //fake loading
   async function punishFakeLoading(ui) {
@@ -71,7 +84,7 @@ window.Fate.punishments.veryBadList = [
   },
 
   // ✅ AI cursed text BUT instant: overlay now, AI text later
-  async function punishCursedTextAI(ui) {
+  /*async function punishCursedTextAI() {
     // ensure pool refills in background if low
     if (window.Fate.punishments._aiPool.length < 2) {
       window.Fate.punishments._refillAIPool();
@@ -130,9 +143,10 @@ window.Fate.punishments.veryBadList = [
     document.body.appendChild(overlay);
     await window.Fate.sleep(2000);
     overlay.remove();
-  },
+  },*/
 ];
 
+//bad punishments
 window.Fate.punishments.badList = [
   //blur screen
   async function punishBlur(ui) {
@@ -244,6 +258,7 @@ window.Fate.punishments.badList = [
   },
 ];
 
+//shuffling algo
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -251,7 +266,8 @@ function shuffle(arr) {
   }
 }
 
-window.Fate.punishments._bag = [];
+window.Fate.punishments._badBag = [];
+window.Fate.punishments._veryBadBag = [];
 
 window.Fate.punishments.runBad = async function runBad(ui) {
   // Refill bag if empty
@@ -277,10 +293,10 @@ window.Fate.punishments.runVeryBad = async function runVeryBad(ui) {
   await p(ui);
 };
 
-//use this to test ai
+//testing
 /*window.Fate.punishments.runRandom = async function runRandom() {
-  const arr = window.Fate.punishments.veryBadList;
-  const p = arr[3];
+  const arr = window.Fate.punishments.badList;
+  const p = arr[2];
   //const p = arr[Math.floor(Math.random() * arr.length)];
   await p();
 };*/
