@@ -7,7 +7,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["core.js", "punishments.js", "rewards.js", "content.js"],
+      "js": ["core.js", "punishments.js", "rewards.js", "content.js", "progress.js"],
       "css": ["overlay.css"],
       "run_at": "document_start"
     }

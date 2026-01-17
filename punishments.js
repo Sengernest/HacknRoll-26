@@ -1,4 +1,3 @@
-window.Fate = window.Fate || {};
 window.Fate.punishments = window.Fate.punishments || {};
 
 window.Fate.punishments.list = [

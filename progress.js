@@ -1,83 +1,90 @@
+window.Fate = window.Fate || {};
+window.Fate.progress = window.Fate.progress || {};
+
 /*************************************************
- * FATE PROGRESS MODULE
+ * INTERNAL STATE
  *************************************************/
 
-const FateProgress = (() => {
-  let progress = 0;
-  let max = 100;
+window.Fate.progress._state = {
+  value: 0,
+  max: 100,
+};
 
-  let container;
-  let bar;
-  let text;
+/*************************************************
+ * INIT
+ *************************************************/
 
-  function init(options = {}) {
-    max = options.max ?? 100;
-    progress = options.initial ?? 0;
 
-    if (document.getElementById("fate-progress-container")) {
-      cacheElements();
-      render();
-      return;
-    }
+window.Fate.progress.init = function initProgress(options = {}) {
+  const state = window.Fate.progress._state;
 
-    container = document.createElement("div");
-    container.id = "fate-progress-container";
-    container.innerHTML = `
-      <div id="fate-progress-bar"></div>
-      <div id="fate-progress-text"></div>
-    `;
+  state.max = options.max ?? 100;
+  state.value = options.initial ?? 0;
 
-    document.documentElement.appendChild(container);
-    cacheElements();
+  if (document.getElementById("fate-progress-container")) {
     render();
+    return;
   }
 
-  function cacheElements() {
-    bar = document.getElementById("fate-progress-bar");
-    text = document.getElementById("fate-progress-text");
+  const container = document.createElement("div");
+  container.id = "fate-progress-container";
+  container.innerHTML = `
+    <div id="fate-progress-bar"></div>
+    <div id="fate-progress-text"></div>
+  `;
+
+  document.documentElement.appendChild(container);
+  render();
+};
+
+document.dispatchEvent(new Event("fate:progressReady"));
+/*************************************************
+ * API
+ *************************************************/
+
+window.Fate.progress.add = function addProgress(amount) {
+  set(window.Fate.progress._state.value + amount);
+};
+
+window.Fate.progress.set = function setProgress(value) {
+  set(value);
+};
+
+window.Fate.progress.get = function getProgress() {
+  return window.Fate.progress._state.value;
+};
+
+/*************************************************
+ * INTERNAL HELPERS
+ *************************************************/
+
+function set(value) {
+  const state = window.Fate.progress._state;
+  state.value = clamp(value, 0, state.max);
+  render();
+
+  if (state.value >= state.max) {
+    onComplete();
   }
+}
 
-  function add(amount) {
-    set(progress + amount);
-  }
+function render() {
+  const state = window.Fate.progress._state;
 
-  function set(value) {
-    progress = clamp(value, 0, max);
-    render();
+  const bar = document.getElementById("fate-progress-bar");
+  const text = document.getElementById("fate-progress-text");
+  if (!bar || !text) return;
 
-    if (progress >= max) {
-      onComplete();
-    }
-  }
+  const percent = (state.value / state.max) * 100;
+  bar.style.width = percent + "%";
+  text.textContent = `Fate: ${Math.round(percent)}%`;
+}
 
-  function get() {
-    return progress;
-  }
+function onComplete() {
+  console.log("✨ Fate completed");
+  document.dispatchEvent(new CustomEvent("fate:progressComplete"));
+}
 
-  function render() {
-    if (!bar || !text) return;
-
-    const percent = (progress / max) * 100;
-    bar.style.width = percent + "%";
-    text.textContent = `Fate: ${Math.round(percent)}%`;
-  }
-
-  function onComplete() {
-    console.log("✨ Fate completed");
-    // Hook point:
-    // dispatchEvent(new CustomEvent("fate:complete"))
-  }
-
-  function clamp(v, min, max) {
-    return Math.max(min, Math.min(max, v));
-  }
-
-  return {
-    init,
-    add,
-    set,
-    get,
-  };
-})();
-
-export default FateProgress;
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
+}

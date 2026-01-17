@@ -1,5 +1,3 @@
-import FateProgress from "./fateProgress.js";
-
 /*************************************************
  * STATE
  *************************************************/
@@ -12,13 +10,10 @@ const FateState = {
 /*************************************************
  * INIT
  *************************************************/
-
-FateProgress.init({
-  max: 100,
-  initial: 0,
+document.addEventListener("fate:progressReady", () => {
+  window.Fate.progress.init({ max: 100 });
+  attachClickInterceptor();
 });
-
-attachClickInterceptor();
 
 /*************************************************
  * CLICK INTERCEPTOR
@@ -64,14 +59,15 @@ function shouldIntercept(e) {
  * DICE RESOLUTION
  *************************************************/
 
+
 async function resolveRoll(roll) {
   if (roll <= 2) {
     await window.Fate?.punishments?.runRandom?.();
-    FateProgress.add(-5);
+    await window.Fate?.progress?.add(-5);
     return;
   }
 
-  FateProgress.add(10);
+  await window.Fate?.progress?.add(10);
   performAction(FateState.pendingAction);
 }
 
