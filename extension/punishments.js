@@ -83,14 +83,22 @@ window.Fate.punishments.veryBadList = [
     overlay.style.justifyContent = "center";
     overlay.style.zIndex = "999999";
     overlay.innerHTML = `
-    <iframe width="1024" height="576"
-      src="https://www.youtube.com/embed/klfT41uZniI?autoplay=1&controls=0&rel=0"
-      title="YouTube video player" frameBorder="0"
-      allow="autoplay; encrypted-media;"
-      referrerPolicy="strict-origin-when-cross-origin"
-      allowFullScreen></iframe>
-  `;
+      <div>
+        <iframe width="1024" height="576"
+          src="https://www.youtube.com/embed/klfT41uZniI?autoplay=1&controls=0&rel=0"
+          title="YouTube video player" frameBorder="0"
+          allow="autoplay; encrypted-media;"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen/>
+        <p>click to exit after 5 seconds</p>
+      </div>
+    `;
     document.body.appendChild(overlay);
+    await window.Fate.sleep(5000);
+    const removeOverlay = () => {
+      if (overlay.parentElement) overlay.remove();
+    };
+    overlay.addEventListener("click", removeOverlay);
   },
 
   // ✅ AI cursed text BUT instant: overlay now, AI text later
