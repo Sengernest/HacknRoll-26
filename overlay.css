@@ -54,19 +54,25 @@
   animation: fateResultIn 160ms cubic-bezier(.2,.9,.25,1) forwards;
 }
 
-.fate-result.success{
+@keyframes fateResultIn{
+  from { opacity: 0; transform: translateX(-50%) translateY(-8px) scale(.98); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0)    scale(1.02); }
+}
+
+.fate-result.good{
   background: #eafff1;
   color: #0f7a36;
   border: 1px solid #bff0cf;
 }
 
-.fate-result.fail{
+.fate-result.bad{
+  background: #fff7e6;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.fate-result.very-bad{
   background: #ffecec;
   color: #b42318;
   border: 1px solid #ffc7c7;
-}
-
-@keyframes fateResultIn{
-  from { opacity: 0; transform: translateX(-50%) translateY(-8px) scale(.98); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0)    scale(1.02); }
 }
