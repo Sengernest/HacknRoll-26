@@ -27,31 +27,6 @@ window.Fate.punishments.veryBadList = [
     document.body.style.transform = "";
   },
 
-  //rick roll
-  async function punishRickroll() {
-    window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
-  },
-];
-
-window.Fate.punishments.badList = [
-  //blur screen
-  async function punishBlur() {
-    alert("💀 Bad luck! Your screen will be blurred for 10 seconds...");
-    document.body.style.filter = "blur(5px)";
-    await window.Fate.sleep(10000);
-    document.body.style.filter = "";
-  },
-
-  //invert colors
-  async function punishInvert() {
-    alert(
-      "💀 Bad luck! The colors of your screen will be inverted for 10 seconds..."
-    );
-    document.body.style.filter = "invert(1) hue-rotate(180deg)";
-    await window.Fate.sleep(10000);
-    document.body.style.filter = "";
-  },
-
   //freeze clicks briefly
   async function punishFreeze() {
     alert("💀 Bad luck! Your mouse clicks will be disabled for 10 seconds...");
@@ -63,7 +38,32 @@ window.Fate.punishments.badList = [
     await window.Fate.sleep(10000);
     blocker.remove();
   },
+];
 
+window.Fate.punishments.badList = [
+  //blur screen
+  async function punishBlur() {
+    alert("💀 Bad luck! Your screen will be blurred for 10 seconds...");
+    document.body.style.filter = "blur(5px)";
+    await window.Fate.sleep(10000);
+    document.body.style.filter = "";
+  },
+  
+  //invert colors
+  async function punishInvert() {
+    alert(
+      "💀 Bad luck! The colors of your screen will be inverted for 10 seconds..."
+    );
+    document.body.style.filter = "invert(1) hue-rotate(180deg)";
+    await window.Fate.sleep(10000);
+    document.body.style.filter = "";
+  },
+
+  //rick roll
+  async function punishRickroll() {
+    window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
+  },
+  
   /*close tab (DOES NOT WORK)
   async function punishCloseTab() {
     alert("💀 Fate has decided.");
