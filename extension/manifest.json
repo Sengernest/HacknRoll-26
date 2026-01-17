@@ -2,6 +2,10 @@
   "manifest_version": 3,
   "name": "Fate Mode (MVP)",
   "version": "0.0.1",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
   "description": "Roll a dice before any click happens.",
   "host_permissions": ["<all_urls>"],
   "content_scripts": [
