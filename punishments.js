@@ -1,7 +1,39 @@
 window.Fate = window.Fate || {};
 window.Fate.punishments = window.Fate.punishments || {};
 
-window.Fate.punishments.list = [
+window.Fate.punishments.veryBadList = [
+  //fake loading
+  async function punishFakeLoading() {
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.inset = "0";
+    overlay.style.background = "rgba(0,0,0,0.7)";
+    overlay.style.color = "white";
+    overlay.style.display = "flex";
+    overlay.style.alignItems = "center";
+    overlay.style.justifyContent = "center";
+    overlay.style.zIndex = "999999";
+    overlay.textContent = "Loading...";
+    document.body.appendChild(overlay);
+    await window.Fate.sleep(10000);
+    overlay.remove();
+  },
+
+  //flip screen
+  async function punishFlip() {
+    alert("💀 Bad luck! Your screen will be flipped for 10 seconds...");
+    document.body.style.transform = "rotate(180deg)";
+    await window.Fate.sleep(10000);
+    document.body.style.transform = "";
+  },
+
+  //rick roll
+  async function punishRickroll() {
+    window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
+  },
+];
+
+window.Fate.punishments.badList = [
   //blur screen
   async function punishBlur() {
     alert("💀 Bad luck! Your screen will be blurred for 10 seconds...");
@@ -32,36 +64,6 @@ window.Fate.punishments.list = [
     blocker.remove();
   },
 
-  //fake loading
-  async function punishFakeLoading() {
-    const overlay = document.createElement("div");
-    overlay.style.position = "fixed";
-    overlay.style.inset = "0";
-    overlay.style.background = "rgba(0,0,0,0.7)";
-    overlay.style.color = "white";
-    overlay.style.display = "flex";
-    overlay.style.alignItems = "center";
-    overlay.style.justifyContent = "center";
-    overlay.style.zIndex = "999999";
-    overlay.textContent = "Loading...";
-    document.body.appendChild(overlay);
-    await window.Fate.sleep(10000);
-    overlay.remove();
-  },
-
-  //flip screen
-  async function punishFlip() {
-    alert("💀 Bad luck! Your screen will be flipped for 10 seconds...");
-    document.body.style.transform = "rotate(180deg)";
-    await window.Fate.sleep(10000);
-    document.body.style.transform = "";
-  },
-
-  //rick roll
-  async function punishRickroll() {
-    window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
-  },
-
   /*close tab (DOES NOT WORK)
   async function punishCloseTab() {
     alert("💀 Fate has decided.");
@@ -78,10 +80,10 @@ function shuffle(arr) {
 
 window.Fate.punishments._bag = [];
 
-window.Fate.punishments.runRandom = async function runRandomPunishment() {
+window.Fate.punishments.runBad = async function runBad() {
   // Refill bag if empty
   if (window.Fate.punishments._bag.length === 0) {
-    window.Fate.punishments._bag = [...window.Fate.punishments.list];
+    window.Fate.punishments._bag = [...window.Fate.punishments.badList];
     shuffle(window.Fate.punishments._bag);
   }
 
@@ -90,11 +92,23 @@ window.Fate.punishments.runRandom = async function runRandomPunishment() {
   await p();
 };
 
+window.Fate.punishments.runVeryBad = async function runVeryBad() {
+  // Refill bag if empty
+  if (window.Fate.punishments._bag.length === 0) {
+    window.Fate.punishments._bag = [...window.Fate.punishments.veryBadList];
+    shuffle(window.Fate.punishments._bag);
+  }
+
+  // Draw one punishment
+  const p = window.Fate.punishments._bag.pop();
+  await p();
+};
+
+
+
 /*window.Fate.punishments.runRandom = async function runRandomPunishment() {
   const arr = window.Fate.punishments.list;
   const p = arr[4];
   //const p = arr[Math.floor(Math.random() * arr.length)];
   await p();
 };*/
-
-
