@@ -7,7 +7,7 @@ window.Fate.progress = window.Fate.progress || {};
 
 window.Fate.progress._state = {
   value: 0,
-  max: 100,
+  max: 50,
 };
 
 window.Fate.DIE_SIZE = 20;
@@ -111,7 +111,7 @@ function render() {
 
   const percent = (state.value / state.max) * 100;
   bar.style.width = percent + "%";
-  text.textContent = `Fate: ${Math.round(percent)}%`;
+  text.textContent = `Fate: ${Math.round(percent)} XP`;
 }
 
 function onComplete() {

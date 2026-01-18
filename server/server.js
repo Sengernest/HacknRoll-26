@@ -45,8 +45,8 @@ Keep responses concise (1–2 sentences each).
 `;
 
 const memory = {
-  history: [],           // past outcomes
-  lastNarrations: null,  // { good, very_good }
+  history: [], // past outcomes
+  lastNarrations: null, // { good, very_good }
 };
 
 const MAX_HISTORY = 20;
@@ -65,8 +65,8 @@ function display_memory() {
 
 function mockNarrations(progress, history) {
   return {
-    good: ` Progress ${progress}: Fortune nudges you forward.`,
-    very_good: ` Progress ${progress}: Destiny bends completely in your favor.`,
+    good: `+10 Progress XP: Fortune nudges you forward.`,
+    very_good: `+20 Progress XP: Destiny bends completely in your favor.`,
   };
 }
 
@@ -81,7 +81,6 @@ function extractJSON(text) {
   const jsonString = text.slice(firstBrace, lastBrace + 1);
   return JSON.parse(jsonString);
 }
-
 
 app.post("/fate/init", async (req, res) => {
   console.log("🧠 /fate/init called");
@@ -130,7 +129,6 @@ app.post("/fate/init", async (req, res) => {
   }
 });
 
-
 app.post("/fate/query", async (req, res) => {
   console.log("🧠 /fate/query called");
   try {
@@ -152,7 +150,7 @@ app.post("/fate/query", async (req, res) => {
     }
 
     const historyText = memory.history
-      .map(h => `- ${h.outcome} at progress ${h.progress}`)
+      .map((h) => `- ${h.outcome} at progress ${h.progress}`)
       .join("\n");
 
     const prompt = `
@@ -162,8 +160,8 @@ app.post("/fate/query", async (req, res) => {
       ${historyText}
 
       Generate updated narrations for:
-      - GOOD outcome, ${progress+10} / 100 progress
-      - VERY_GOOD outcome, ${progress+20} / 100 progress
+      - GOOD outcome, ${progress + 10} / 100 progress
+      - VERY_GOOD outcome, ${progress + 20} / 100 progress
       `;
 
     const response = await ai.models.generateContent({
@@ -175,7 +173,7 @@ app.post("/fate/query", async (req, res) => {
         },
       ],
     });
-    
+
     console.log("Gemini response:", response.text);
 
     const json = extractJSON(response.text);
@@ -212,7 +210,7 @@ app.post("/mockfate/init", async (req, res) => {
     memory.lastNarrations = narrations;
 
     console.log("🧪 MOCK INIT");
-    display_memory
+    display_memory;
 
     res.json({
       ok: true,
@@ -220,7 +218,6 @@ app.post("/mockfate/init", async (req, res) => {
       narrations,
       memory,
     });
-    
   } catch (err) {
     console.error("Mock init error:", err);
     res.status(500).json({ error: "Mock init failed" });
@@ -269,9 +266,6 @@ app.post("/mockfate/query", async (req, res) => {
   }
 });
 
-
-
 app.listen(process.env.PORT, () => {
   console.log(`Gemini backend running on port ${process.env.PORT}`);
 });
-
