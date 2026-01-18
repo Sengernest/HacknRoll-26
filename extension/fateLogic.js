@@ -12,20 +12,23 @@ window.Fate.progress._state = {
 
 window.Fate.DIE_SIZE = 20;
 
-const FATE_VERY_BAD = 4; // 1-4
-const FATE_BAD = 16; // 5-8
-const FATE_GOOD = 20; // 9-20
+const FATE_VERY_BAD = 3; // 1-4
+const FATE_BAD = 10; // 5-8
+const FATE_GOOD = 17; // 9-20
+const FATE_VERY_GOOD = 20; // N/A
 
 window.Fate.Category = Object.freeze({
   VERY_BAD: "VERY_BAD",
   BAD: "BAD",
   GOOD: "GOOD",
+  VERY_GOOD: "VERY_GOOD",
 });
 
 window.Fate.evaluateFate = function evaluateFate(roll) {
   if (roll <= FATE_VERY_BAD) return Fate.Category.VERY_BAD;
   if (roll <= FATE_BAD) return Fate.Category.BAD;
   if (roll <= FATE_GOOD) return Fate.Category.GOOD;
+  if (roll <= FATE_VERY_GOOD) return Fate.Category.VERY_GOOD;
   throw new Error("Invalid die value");
 };
 
@@ -33,11 +36,6 @@ window.Fate.FATE_UI = {
   [window.Fate.Category.GOOD]: { text: "SUCCESS", className: "good" },
   [window.Fate.Category.BAD]: { text: "BAD LUCK", className: "bad" },
   [window.Fate.Category.VERY_BAD]: { text: "DISASTER", className: "very-bad" },
-};
-
-window.Fate.progress._state = {
-  value: 0,
-  max: 100,
 };
 
 /*************************************************
