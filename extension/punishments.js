@@ -66,7 +66,7 @@ window.Fate.punishments.veryBadList = [
   //screen glitch
   {
     message:
-      "💀 Bad luck! Your website is gg to crash!",
+      "💀 Bad luck! Your website is going to crash!",
 
     // flip screen
     run: async () => {

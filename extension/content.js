@@ -108,7 +108,7 @@ function showDice(onDone) {
       fps: 60,
     });
     
-    rollNumEl.textContent = String(rollVal);
+    rollNumEl.textContent = "You rolled: " + String(rollVal);
     rollNumEl.style.display = "block";
 
     const fate = window.Fate.evaluateFate(rollVal);
