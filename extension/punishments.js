@@ -253,7 +253,7 @@ window.Fate.punishments.badList = [
             title="YouTube video player" frameBorder="0"
             allow="autoplay; encrypted-media;"
             referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen/>
+            allowFullScreen></iframe>
           <p>click to exit after 5 seconds</p>
         </div>
       `;
@@ -500,5 +500,5 @@ window.Fate.punishments.pickVeryBad = function () {
 // --------------------------------------------------
 
 window.Fate.punishments.runRandom = async function () {
-  await this.badList[0]();
+  await this.badList[0].run();
 };

@@ -105,8 +105,11 @@ function showDice(onDone) {
   const overlay = document.createElement("div");
   overlay.id = "fate-overlay";
   overlay.innerHTML = `
+    <div class="fate-rollnum" id="rollnum"></div>
+
     <div class="fate-card">
       <img id="dice-img" src="${initialSrc}" style="cursor:pointer" />
+      <button class="fate-btn" id="roll-btn">Roll</button>
       <div class="fate-result" id="result" aria-live="polite"></div>
     </div>
   `;
@@ -114,6 +117,8 @@ function showDice(onDone) {
   document.documentElement.appendChild(overlay);
 
   const diceImg = overlay.querySelector("#dice-img");
+  const rollBtn = overlay.querySelector("#roll-btn");
+  const rollNumEl = overlay.querySelector("#rollnum");
   const resultElem = overlay.querySelector("#result");
 
   const ui = {
@@ -127,7 +132,11 @@ function showDice(onDone) {
     },
   };
 
-  awaitUserClick(diceImg, async () => {
+  const roll = async () => {
+    rollBtn.disabled = true;
+    rollBtn.style.display = "none";
+    diceImg.style.pointerEvents = "none";
+
     await window.Fate.sleep(80);
 
     const roll =
@@ -135,12 +144,15 @@ function showDice(onDone) {
 
     await playDiceOutcomeAnimation({
       imgEl: diceImg,
-      outcome: roll,
+      outcome: rollVal,
       frameCount: 72,
       fps: 60,
     });
+    
+    rollNumEl.textContent = "You rolled: " + String(rollVal);
+    rollNumEl.style.display = "block";
 
-    const fate = window.Fate.evaluateFate(roll);
+    const fate = window.Fate.evaluateFate(rollVal);
 
     // Progress update
     if (fate === window.Fate.Category.GOOD) {
@@ -157,22 +169,19 @@ function showDice(onDone) {
 
     await window.Fate.sleep(300);
     await onDone(fate, ui);
-  });
-}
+  }
 
-
-/* =========================
-   Helpers
-   ========================= */
-
-function awaitUserClick(el, fn) {
-  const handler = async (e) => {
+  rollBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    el.removeEventListener("click", handler);
-    await fn();
-  };
-  el.addEventListener("click", handler, { once: true });
-}
+    roll();
+  }, { once: true });
+  
+  diceImg.addEventListener("click", (e) => {
+    e.stopPropagation();
+    roll();
+  }, { once: true });
+
+};  
 
 function sendMessageAsync(message) {
   return new Promise((resolve) => {

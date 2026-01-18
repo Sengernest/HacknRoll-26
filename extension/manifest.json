@@ -1,22 +1,29 @@
 {
-  "manifest_version": 3,
   "name": "Fate Mode (MVP)",
+  "manifest_version": 3,
   "version": "0.0.1",
   "background": {
     "service_worker": "background.js",
     "type": "module"
   },
   "description": "Roll a dice before any click happens.",
+  "permissions": ["storage"],
   "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "core.js",
+    "type": "module"
+  },
+  "action": {},
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "js": [
-        "core.js",
+        "fateUtils.js",
         "punishments.js",
         "rewards.js",
         "fateLogic.js",
-        "content.js"
+        "content.js",
+        "libs/confetti.browser.min.js"
       ],
       "css": ["overlay.css"],
       "run_at": "document_start"
