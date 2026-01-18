@@ -164,7 +164,7 @@
 
 .fate-result.good {
   background: #eafff1;
-  color: #F5F5F5;
+  color: #0f7a36;
   border: 1px solid #bff0cf;
 }
 
@@ -217,7 +217,7 @@
   top: -22px;
   left: 0;
   font-size: 16px;
-  color: black;
+  color: green;
   opacity: 0.85;
 }
 
