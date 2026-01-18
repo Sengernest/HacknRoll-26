@@ -110,7 +110,7 @@ function render() {
 
   const percent = (state.value / state.max) * 100;
   bar.style.width = percent + "%";
-  text.textContent = `Fate: ${Math.round(percent)}%`;
+  text.textContent = `Fate: ${Math.round(percent)} XP`;
 }
 
 function onComplete() {
