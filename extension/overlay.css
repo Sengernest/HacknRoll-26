@@ -156,9 +156,15 @@
   }
 }
 
-.fate-result.good {
+.fate-result.very-good {
   background: #eafff1;
   color: #0f7a36;
+  border: 1px solid #bff0cf;
+}
+
+.fate-result.good {
+  background: #eafff1;
+  color: #F5F5F5;
   border: 1px solid #bff0cf;
 }
 

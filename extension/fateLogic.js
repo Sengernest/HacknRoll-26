@@ -33,6 +33,7 @@ window.Fate.evaluateFate = function evaluateFate(roll) {
 };
 
 window.Fate.FATE_UI = {
+  [window.Fate.Category.VERY_GOOD]: { text: "CRITICAL SUCCESS", className: "very-good" },
   [window.Fate.Category.GOOD]: { text: "SUCCESS", className: "good" },
   [window.Fate.Category.BAD]: { text: "BAD LUCK", className: "bad" },
   [window.Fate.Category.VERY_BAD]: { text: "DISASTER", className: "very-bad" },
