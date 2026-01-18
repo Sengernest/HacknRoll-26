@@ -1,25 +1,26 @@
 let busy = false;
 let pending = null;
 
-
 window.Fate.progress.init({ max: 100 });
+
+
+/* =========================
+   CLICK INTERCEPTOR
+   ========================= */
 
 document.addEventListener(
   "click",
   (e) => {
     if (busy) return;
-    if (e.button !== 0) return; // left click only
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // don't break new tab etc
+    if (e.button !== 0) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 
     const el = e.target.closest(
-      "a,button,[role='button'],input[type='submit']",
+      "a,button,[role='button'],input[type='submit']"
     );
     if (!el) return;
-
-    // ignore our own overlay
     if (el.closest("#fate-overlay")) return;
 
-    // STOP the click
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
@@ -28,35 +29,76 @@ document.addEventListener(
     busy = true;
 
     showDice(async (fate, ui) => {
-      
-      if (fate === window.Fate.Category.GOOD) {
-        ui.setResult(fate, "Success!");
+      /* =========================
+         GOOD FATE (instant)
+         ========================= */
+
+      if (fate === window.Fate.Category.GOOD || fate === window.Fate.Category.VERY_GOOD) {
+        const reply = await sendMessageAsync({
+          type: "FATE_GET",
+        });
+
+        console.log(reply);
+
+        const narration =
+          fate === window.Fate.Category.VERY_GOOD
+            ? reply.narrations.very_good
+            : reply.narrations.good;
+
+        ui.setResult(fate, narration);
+
         await window.Fate.sleep(1500);
         ui.remove();
         perform(pending);
         cleanup();
+
+        if (window.Fate.progress.get() >= window.Fate.progress._state.max) {
+          chrome.runtime.sendMessage({ type: "FATE_INIT", progress: 0 });
+          window.Fate.progress.set(0);
+        }
+        chrome.runtime.sendMessage({
+          type: "FATE_CONSUMED",
+          outcome: narration,
+          progress: window.Fate.progress.get(),
+        });
+
         return;
       }
 
-      const p =
+      /* =========================
+         BAD / VERY BAD
+         ========================= */
+
+      const punishment =
         fate === window.Fate.Category.VERY_BAD
           ? window.Fate.punishments.pickVeryBad()
           : window.Fate.punishments.pickBad();
-      console.log("Punishment chosen:", p);
-      ui.setResult(fate, p ? p.message : "Bad Luck!");
+
+      ui.setResult(fate, punishment?.message ?? "Bad luck.");
+      
+      await sendMessageAsync({
+        type: "FATE_CONSUMED",
+        outcome: punishment?.message ?? fate,
+        progress: window.Fate.progress.get(),
+      });
+
       await window.Fate.sleep(1500);
       ui.remove();
 
-      if (p && typeof p.run === "function") {
-        await p.run();
+      if (punishment && typeof punishment.run === "function") {
+        await punishment.run();
       }
 
       cleanup();
     });
   },
-  true,
-  ); // capture phase
-// UI
+  true
+);
+
+/* =========================
+   UI
+   ========================= */
+
 function showDice(onDone) {
   const initialSrc = chrome.runtime.getURL(
     "assets/diceroll-1/0001.png"
@@ -83,7 +125,7 @@ function showDice(onDone) {
 
   const ui = {
     setResult(fate, text) {
-      const u = window.Fate.FATE_UI[fate] ?? { text: "???", className: "" };
+      const u = window.Fate.FATE_UI[fate] ?? { className: "" };
       resultElem.textContent = text;
       resultElem.className = `fate-result show ${u.className}`;
     },
@@ -99,7 +141,8 @@ function showDice(onDone) {
 
     await window.Fate.sleep(80);
 
-    const rollVal = 1 + Math.floor(Math.random() * window.Fate.DIE_SIZE);
+    const rollVal =
+      1 + Math.floor(Math.random() * window.Fate.DIE_SIZE);
 
     await playDiceOutcomeAnimation({
       imgEl: diceImg,
@@ -113,11 +156,18 @@ function showDice(onDone) {
 
     const fate = window.Fate.evaluateFate(rollVal);
 
-    switch (fate) {
-      case window.Fate.Category.GOOD: window.Fate.progress.add(10); break;
-      case window.Fate.Category.BAD: window.Fate.progress.add(3); break;
-      case window.Fate.Category.VERY_BAD: window.Fate.progress.add(-5); break;
+    // Progress update
+    if (fate === window.Fate.Category.GOOD) {
+      window.Fate.progress.add(10);
+    } else if (fate === window.Fate.Category.VERY_GOOD) {
+      window.Fate.progress.add(20);
+    } else if (fate === window.Fate.Category.BAD) {
+      window.Fate.progress.add(0);
+    } else {
+      window.Fate.progress.add(0);
     }
+
+    
 
     await window.Fate.sleep(300);
     await onDone(fate, ui);
@@ -135,6 +185,13 @@ function showDice(onDone) {
 
 };  
 
+function sendMessageAsync(message) {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage(message, (response) => {
+      resolve(response);
+    });
+  });
+}
 
 async function playDiceOutcomeAnimation({
   imgEl,
@@ -146,23 +203,16 @@ async function playDiceOutcomeAnimation({
 
   for (let i = 1; i <= frameCount; i++) {
     const frame = String(i).padStart(4, "0");
-    const src = chrome.runtime.getURL(
+    imgEl.src = chrome.runtime.getURL(
       `assets/diceroll-${outcome}/${frame}.png`
     );
-
-    imgEl.src = src;
-
-    // DEBUG (temporary)
-    // console.log("Loading frame:", src);
-
     await window.Fate.sleep(frameDelay);
   }
 }
 
-
-// =============
-// Boilerplate
-// =============
+/* =========================
+   Click replay
+   ========================= */
 
 function cleanup() {
   pending = null;
@@ -198,3 +248,9 @@ function perform(a) {
 
   a.el.click();
 }
+
+
+chrome.runtime.sendMessage({
+  type: "FATE_INIT",
+  progress: window.Fate.progress.get(),
+});

@@ -232,3 +232,14 @@
   transform: scaleX(1);
   background: red;
 }
+
+.fate-result.pending {
+  opacity: 0.75;
+  animation: pulse 1s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
