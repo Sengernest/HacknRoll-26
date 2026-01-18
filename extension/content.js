@@ -234,8 +234,10 @@ async function playDiceOutcomeAnimation({
   if (fate === window.Fate.Category.GOOD) {
     diceAudio = AudioFiles.success;
   } else if (fate === window.Fate.Category.VERY_GOOD) {
-    diceAudio = AudioFiles.failure;
+    diceAudio = AudioFiles.success;
   } else if (fate === window.Fate.Category.BAD) {
+    diceAudio = AudioFiles.failure
+  } else if (fate === window.Fate.Category.VERY_BAD) {
     diceAudio = AudioFiles.failure
   } else {
     diceAudio = AudioFiles.success;
