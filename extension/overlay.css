@@ -94,7 +94,7 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  font-size: 96px;
+  font-size: 64px;
   font-weight: 900;
   color: white;
   text-shadow: 0 12px 40px rgba(0,0,0,.6);
@@ -178,35 +178,40 @@
    PROGRESS BAR (GLOBAL UI)
    ================================ */
 
-#fate-progress-container {
+#fate-progress-container{
   position: fixed;
   bottom: 16px;
   left: 16px;
+  z-index: 2147483648;
+}
 
+#fate-progress-row{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#fate-progress-track{
   width: 200px;
   height: 16px;
-
   background: #222;
   border-radius: 8px;
   overflow: hidden;
-
-  z-index: 2147483648; /* above overlay */
 }
 
-#fate-progress-bar {
+#fate-progress-bar{
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg, #22c55e, #4ade80);
   transition: width 0.3s ease;
 }
 
-#fate-progress-text {
+#fate-progress-text{
   position: absolute;
   top: -22px;
   left: 0;
-
-  font-size: 11px;
-  color: #e5e7eb;
+  font-size: 16px;
+  color: black;
   opacity: 0.85;
 }
 

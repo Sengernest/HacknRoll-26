@@ -57,9 +57,14 @@ window.Fate.progress.init = function initProgress(options = {}) {
   const container = document.createElement("div");
   container.id = "fate-progress-container";
   container.innerHTML = `
-    <div id="fate-progress-bar"></div>
+    <div id="fate-progress-row">
+      <div id="fate-progress-track">
+        <div id="fate-progress-bar"></div>
+      </div>
+    </div>
     <div id="fate-progress-text"></div>
   `;
+
 
   document.documentElement.appendChild(container);
   render();
