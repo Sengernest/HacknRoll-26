@@ -52,6 +52,26 @@ document.addEventListener(
             : reply.narrations.good;
 
         ui.setResult(fate, narration);
+        const fateConfettiCanvas = document.createElement("canvas");
+        fateConfettiCanvas.id = "fate-confetti-canvas";
+        fateConfettiCanvas.style.position = "fixed";
+        fateConfettiCanvas.style.top = "0";
+        fateConfettiCanvas.style.left = "0";
+        fateConfettiCanvas.style.width = "100%";
+        fateConfettiCanvas.style.height = "100%";
+        fateConfettiCanvas.style.pointerEvents = "none";
+        fateConfettiCanvas.style.zIndex = "2147483647"; // max safe integer
+        document.body.appendChild(fateConfettiCanvas);
+
+
+// create confetti instance
+        const fateConfetti = confetti.create(fateConfettiCanvas, { resize: true });
+
+        fateConfetti({
+          particleCount: 120,
+          spread: 70,
+          origin: { y: 0.7 }
+        });
 
         await window.Fate.sleep(5000);
         ui.remove();
