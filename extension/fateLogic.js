@@ -7,7 +7,7 @@ window.Fate.progress = window.Fate.progress || {};
 
 window.Fate.progress._state = {
   value: 0,
-  max: 100,
+  max: 50,
 };
 
 window.Fate.DIE_SIZE = 20;
