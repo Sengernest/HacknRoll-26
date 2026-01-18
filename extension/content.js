@@ -38,6 +38,8 @@ document.addEventListener(
           type: "FATE_GET",
         });
 
+        console.log(reply);
+
         const narration =
           fate === window.Fate.Category.VERY_GOOD
             ? reply.narrations.very_good
@@ -56,7 +58,7 @@ document.addEventListener(
         }
         chrome.runtime.sendMessage({
           type: "FATE_CONSUMED",
-          outcome: fate,
+          outcome: narration,
           progress: window.Fate.progress.get(),
         });
 
@@ -139,7 +141,7 @@ function showDice(onDone) {
 
     await window.Fate.sleep(80);
 
-    const roll =
+    const rollVal =
       1 + Math.floor(Math.random() * window.Fate.DIE_SIZE);
 
     await playDiceOutcomeAnimation({

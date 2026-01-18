@@ -136,7 +136,7 @@ app.post("/fate/query", async (req, res) => {
   try {
     const { outcome, progress } = req.body;
 
-    if (!outcome || !progress) {
+    if (!outcome || progress == null) {
       return res.status(400).json({ error: "outcome and progress required" });
     }
 

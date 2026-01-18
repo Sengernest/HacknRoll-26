@@ -9,10 +9,6 @@
   "description": "Roll a dice before any click happens.",
   "permissions": ["storage"],
   "host_permissions": ["<all_urls>"],
-  "background": {
-    "service_worker": "core.js",
-    "type": "module"
-  },
   "action": {},
   "content_scripts": [
     {
