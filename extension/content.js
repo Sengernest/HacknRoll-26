@@ -52,13 +52,27 @@ document.addEventListener(
             : reply.narrations.good;
 
         ui.setResult(fate, narration);
-        window.FateConfetti.fire({
+        const fateConfettiCanvas = document.createElement("canvas");
+        fateConfettiCanvas.id = "fate-confetti-canvas";
+        fateConfettiCanvas.style.position = "fixed";
+        fateConfettiCanvas.style.top = "0";
+        fateConfettiCanvas.style.left = "0";
+        fateConfettiCanvas.style.width = "100%";
+        fateConfettiCanvas.style.height = "100%";
+        fateConfettiCanvas.style.pointerEvents = "none";
+        fateConfettiCanvas.style.zIndex = "2147483647"; // max safe integer
+        document.body.appendChild(fateConfettiCanvas);
+
+
+// create confetti instance
+        const fateConfetti = confetti.create(fateConfettiCanvas, { resize: true });
+
+        fateConfetti({
           particleCount: 120,
           spread: 70,
           origin: { y: 0.7 }
         });
 
-// create confetti instance
         await window.Fate.sleep(5000);
         ui.remove();
         perform(pending);
@@ -127,30 +141,6 @@ function showDice(onDone) {
       <div class="fate-result" id="result" aria-live="polite"></div>
     </div>
   `;
-  const confettiCanvas = document.createElement("canvas");
-  confettiCanvas.id = "fate-confetti";
-  Object.assign(confettiCanvas.style, {
-    position: "fixed",
-    top: "0",
-    left: "0",
-    width: "100%",
-    height: "100%",
-    pointerEvents: "none",
-    zIndex: "2147483647",
-    display: "none"
-  });
-  document.documentElement.appendChild(confettiCanvas);
-
-  const confettiInstance = confetti.create(confettiCanvas, { resize: true });
-  window.FateConfetti = {
-    fire(opts) {
-      confettiCanvas.style.display = "block";
-      confettiInstance(opts);
-      setTimeout(() => (confettiCanvas.style.display = "none"), 1500);
-    }
-  };
-
-
 
   document.documentElement.appendChild(overlay);
 
