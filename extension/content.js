@@ -53,7 +53,7 @@ document.addEventListener(
 
         ui.setResult(fate, narration);
 
-        await window.Fate.sleep(1500);
+        await window.Fate.sleep(5000);
         ui.remove();
         perform(pending);
         cleanup();

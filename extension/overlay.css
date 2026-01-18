@@ -119,7 +119,11 @@
   align-items: center;
   justify-content: center;
 
-  white-space: nowrap;           /* 🔑 prevent wrapping */
+  white-space: normal;
+
+  max-width: calc(100vw - 32px);
+
+  text-align: center;
 
   opacity: 0;
 
