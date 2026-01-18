@@ -1,45 +1,48 @@
 window.Fate = window.Fate || {};
 
-window.Fate.timer = window.Fate.timer || {
-  _el: null,
-  _interval: null,
+window.Fate.punishTimer = window.Fate.punishTimer || {
+  _root: null,
+  _fill: null,
+  _raf: null,
 
   show(ms) {
     this.hide();
 
-    const el = document.createElement("div");
-    el.id = "fate-punish-timer";
-    el.textContent = formatMs(ms);
-    document.documentElement.appendChild(el);
+    const root = document.createElement("div");
+    root.id = "fate-punishtimer";
+    const fill = document.createElement("div");
+    root.appendChild(fill);
 
-    this._el = el;
+    document.documentElement.appendChild(root);
 
-    const start = Date.now();
-    this._interval = setInterval(() => {
-      const left = Math.max(0, ms - (Date.now() - start));
-      if (this._el) this._el.textContent = formatMs(left);
-      if (left <= 0) this.hide();
-    }, 100);
+    this._root = root;
+    this._fill = fill;
+
+    const start = performance.now();
+
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / ms);
+      this._fill.style.transform = `scaleX(${1 - t})`;
+      if (t < 1) this._raf = requestAnimationFrame(tick);
+    };
+
+    this._raf = requestAnimationFrame(tick);
   },
 
   hide() {
-    if (this._interval) clearInterval(this._interval);
-    this._interval = null;
-    if (this._el) this._el.remove();
-    this._el = null;
+    if (this._raf) cancelAnimationFrame(this._raf);
+    this._raf = null;
+    if (this._root) this._root.remove();
+    this._root = null;
+    this._fill = null;
   },
 };
 
-function formatMs(ms) {
-  const s = Math.ceil(ms / 1000);
-  return `Punishment: ${s}s`;
-}
-
-window.Fate.withPunishTimer = async function withPunishTimer(ms, fn) {
-  window.Fate.timer.show(ms);
+window.Fate.withPunishTimer = async function (ms, fn) {
+  window.Fate.punishTimer.show(ms);
   try {
-    await fn();
+    await fn(); 
   } finally {
-    window.Fate.timer.hide();
+    window.Fate.punishTimer.hide();
   }
 };
