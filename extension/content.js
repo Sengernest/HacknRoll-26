@@ -3,6 +3,12 @@ let pending = null;
 
 window.Fate.progress.init({ max: 100 });
 
+chrome.runtime.getURL("assets/sounds/spinup.mp3")
+const AudioFiles = {
+  spinup: new Audio(chrome.runtime.getURL("assets/sounds/spinup.mp3")),
+  success: new Audio(chrome.runtime.getURL("assets/sounds/success.mp3")),
+  failure: new Audio(chrome.runtime.getURL("assets/sounds/failure.mp3")),
+};
 
 /* =========================
    CLICK INTERCEPTOR
@@ -47,7 +53,7 @@ document.addEventListener(
 
         ui.setResult(fate, narration);
 
-        await window.Fate.sleep(1500);
+        await window.Fate.sleep(5000);
         ui.remove();
         perform(pending);
         cleanup();
@@ -144,17 +150,19 @@ function showDice(onDone) {
     const rollVal =
       1 + Math.floor(Math.random() * window.Fate.DIE_SIZE);
 
+    const fate = window.Fate.evaluateFate(rollVal);
+
     await playDiceOutcomeAnimation({
       imgEl: diceImg,
       outcome: rollVal,
       frameCount: 72,
       fps: 60,
+      fate
     });
     
     rollNumEl.textContent = "You rolled: " + String(rollVal);
     rollNumEl.style.display = "block";
 
-    const fate = window.Fate.evaluateFate(rollVal);
 
     // Progress update
     if (fate === window.Fate.Category.GOOD) {
@@ -198,8 +206,19 @@ async function playDiceOutcomeAnimation({
   outcome,
   frameCount = 72,
   fps = 60,
+  fate
 }) {
   const frameDelay = 1000 / fps;
+  let diceAudio = null;
+  try {
+    diceAudio = AudioFiles.spinup;
+    diceAudio.volume = 0.5; // Adjust volume (0.0 to 1.0)
+    diceAudio.play().catch((e) => {
+      console.warn("Failed to play dice sound:", e);
+    });
+  } catch (e) {
+    console.warn("Failed to load dice sound:", e);
+  }
 
   for (let i = 1; i <= frameCount; i++) {
     const frame = String(i).padStart(4, "0");
@@ -208,6 +227,30 @@ async function playDiceOutcomeAnimation({
     );
     await window.Fate.sleep(frameDelay);
   }
+  if (diceAudio) {
+    diceAudio.pause();
+    diceAudio.currentTime = 0;
+  }
+  if (fate === window.Fate.Category.GOOD) {
+    diceAudio = AudioFiles.success;
+  } else if (fate === window.Fate.Category.VERY_GOOD) {
+    diceAudio = AudioFiles.failure;
+  } else if (fate === window.Fate.Category.BAD) {
+    diceAudio = AudioFiles.failure
+  } else {
+    diceAudio = AudioFiles.success;
+  }
+  try {
+    diceAudio.volume = 0.5; // Adjust volume (0.0 to 1.0)
+    diceAudio.play().catch((e) => {
+      console.warn("Failed to play dice sound:", e);
+    });
+    } catch (e) {
+      console.warn("Failed to load dice sound:", e);
+    }
+
+
+
 }
 
 /* =========================
